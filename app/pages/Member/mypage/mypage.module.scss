@@ -1,0 +1,175 @@
+.mypage_wrap{
+  background-color: #fff;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  position: relative;
+  header{
+    display: flex;
+    height: 65px;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #E2E2E2;
+    figure{
+      margin-right: 10px;
+      width: 30px;
+      img{
+        width: 100%;
+      }
+    }
+    p{
+      font-size: 28px;
+      font-family: 'Han_Sans';
+      color:#5498FF;
+    }
+  }
+  .con{
+    padding-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    .con_left{
+      position: relative;
+      >figure{
+        margin-right: 40px;
+        &:nth-of-type(1){
+          width: 114px;
+          height: 114px;
+          border-radius: 50%;
+          background-color: #E4EFFF;
+          display: flex;
+          justify-content: center;
+          align-items: end;
+          overflow: hidden;
+        }
+        &:nth-of-type(2){
+          position: absolute;
+          bottom: -4px;
+          left: 85px;
+        }
+      }
+    }
+    .bg{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1;
+      .bg_top{
+        width: 400px;
+        height: 176px;
+        background-color: #fff;
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        >p{
+          font-family: "NotoSansKR-Medium";
+          font-size: 18px;
+          margin-bottom: 10px;
+        }
+        >span{
+          color: #707070;
+          &:nth-of-type(1){
+            font-family: "NotoSansKR-Medium";
+            margin-bottom: 10px;
+            font-size: 20px;
+            width: 210px;
+            height: 54px;
+            background-color: #D9D9D9;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          &:nth-of-type(2){
+            font-size: 15px;
+            font-family: "NotoSansKR-Regular";
+          }
+        }
+      }
+      .bg_bot{
+        width: 400px;
+        height: 44px;
+        background-color: #5498FF;
+        border-radius:0 0  20px 20px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "NotoSansKR-Medium";
+        font-size: 18px;
+      }
+    }
+    .con_right{
+      >p{
+        margin-bottom: 15px;
+        text-align: center;
+        font-family: "NotoSansKR-Regular";
+        >span{
+          color: #5498FF;
+          font-family: "NotoSansKR-Regular";
+        }
+      }
+      .con_right_li{
+        >ul{
+          display: flex;
+          li{
+            width: 76px;
+            height: 76px;
+            background-color: #F5F5F5;
+            border-radius: 5px;
+            margin-right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            >p{
+              color: #9B9B9B;
+              font-family: "NotoSansKR-Regular";
+            }
+            >span{
+              font-family: "NotoSansKR-Medium";
+            }
+            &:nth-of-type(1){
+              background-color: #E4EFFF;
+            }
+            &:nth-of-type(3){
+              margin-right: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  .con_txt{
+    >ul{
+      >li{
+        border-top: 1px solid #E2E2E2;
+        padding: 24px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "NotoSansKR-Medium";
+        &:last-child{
+          border-bottom: 1px solid #E2E2E2;
+        }
+        >p{
+          &:last-child{
+            color: #707070;
+          }
+        }
+      }
+    }
+  }
+}
