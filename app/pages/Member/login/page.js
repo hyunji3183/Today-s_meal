@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function page() {
   const nav = useRouter();
   const joinClick = ()=>{
-    nav.push('/pages/member/join')
+    nav.push('/pages/Member/join')
   }
   return (
     <div className={login.login_wrap}>

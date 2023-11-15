@@ -134,8 +134,8 @@
               cursor: pointer;
             }
           }
-          &::after{
-            content: "사용 가능한 아이디입니다.";
+          span{
+            // content: "사용 가능한 아이디입니다.";
             position: absolute;
             top: 0;
             right: 0;
@@ -145,8 +145,8 @@
         }
         &:nth-of-type(4){
           position: relative;
-          &::after{
-            content: "비밀번호가 일치합니다.";
+          span{
+            // content: "비밀번호가 일치합니다.";
             position: absolute;
             top: 0;
             right: 0;
@@ -203,8 +203,8 @@
               cursor: pointer;
             }
           }
-          &::after{
-            content: "사용 가능한 아이디입니다.";
+          span{
+            // content: "사용 가능한 아이디입니다.";
             position: absolute;
             top: 0;
             right: 0;
@@ -214,8 +214,8 @@
         }
         &:nth-of-type(4){
           position: relative;
-          &::after{
-            content: "비밀번호가 일치합니다.";
+          span{
+            // content: "비밀번호가 일치합니다.";
             position: absolute;
             top: 0;
             right: 0;
@@ -225,8 +225,8 @@
         }
         &:nth-of-type(5){
           position: relative;
-          &::after{
-            content: "잘못된 코드입니다.";
+          span{
+            // content: "잘못된 코드입니다.";
             position: absolute;
             top: 0;
             right: 0;
