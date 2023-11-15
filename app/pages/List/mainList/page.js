@@ -51,6 +51,11 @@ export default function () {
                 <div>
                   <figure><img src='/expression.png' alt='표정짓기'/></figure>
                   <p>표정짓기</p>
+                  <div className={mainList.con_bot_txt2_hover}>
+                    <figure><img src='/1.png' alt='표정이미지'/></figure>
+                    <figure><img src='/2.png' alt='표정이미지'/></figure>
+                    <figure><img src='/3.png' alt='표정이미지'/></figure>
+                  </div>
                 </div>
                 <div>
                   <figure><img src='/comment.png' alt='댓글달기'/></figure>

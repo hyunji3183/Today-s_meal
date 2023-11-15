@@ -22,6 +22,7 @@
     }
   }
   .con{
+    padding-bottom: 73px;
     >ul{
       >li{
         margin: 0 auto 20px;
@@ -90,7 +91,7 @@
             font-size: 15px;
             display: flex;
             align-items: flex-end;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             >p{
               width: 240px;
               white-space: nowrap;
@@ -103,6 +104,7 @@
           }
         }
         .con_bot{
+          position: relative;
           .con_bot_txt1{
             margin-bottom: 7px;
             display: flex;
@@ -159,6 +161,29 @@
                 font-size: 13px;
                 color: #707070;
                 font-family: "NotoSansKR-Medium";
+              }
+            }
+            .con_bot_txt2_hover{
+              position: absolute;
+              top: -21px;
+              left: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: #fff;
+              width: 110px;
+              height: 44px;
+              border-radius: 60px;
+              box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+              >figure{
+                width: 25px;
+                margin-right: 5px;
+                &:last-child{
+                  margin-right: 0px;
+                }
+                img{
+                  width: 100%;
+                }
               }
             }
           }

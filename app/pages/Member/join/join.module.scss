@@ -16,7 +16,7 @@
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: 480px;
+    max-width: 480px;
     z-index: 1;
     background-color: #fff;
     >figure{
@@ -237,8 +237,8 @@
       }
     }
   }
-  footer{
-    width: 480px;
+  .join_submit{
+    max-width: 480px;
     height: 60px;
     background-color: #5498FF;
     display: flex;

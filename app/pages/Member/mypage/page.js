@@ -1,8 +1,16 @@
 "use client"
 import Footer from '@/app/com/Footer';
 import mypage from './mypage.module.scss'
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function page() {
+  const nav = useRouter();
+  const names = useRef();
+
+  const nameClick = ()=>{
+    names.current.style = `display:flex`
+  }
   return (
     <div className={mypage.mypage_wrap}>
       <header>
@@ -15,15 +23,15 @@ export default function page() {
           <figure><img src='/character2.png' alt='프로필 이미지'/></figure>
           <figure><img src='/add.png' alt='이미지 변경'/></figure>
         </div>
-        <div className={mypage.bg}>
-          <div className={mypage.bg_top}>
-            <p>이름</p>
-            <span>정우성</span>
-            <span>최대 8글자</span>
-          </div>
-          <div className={mypage.bg_bot}>
-            저장
-          </div>
+        <div className={mypage.bg} ref={names}>
+          <form>
+            <div className={mypage.bg_top}>
+              <p>이름</p>
+              <input type='text'/>
+              <span>최대 8글자</span>
+            </div>
+            <input type='submit' value='저장' className={mypage.bg_bot}/>
+          </form>
         </div>
         <div className={mypage.con_right}>
           <p><span>103</span> 일째 식단관리 중</p>
@@ -47,17 +55,13 @@ export default function page() {
       </div>
       <div className={mypage.con_txt}>
         <ul>
-          <li>
+          <li onClick={nameClick}>
             <p>이름</p>
             <p>정우성</p>
           </li>
           <li>
             <p>아이디</p>
             <p>asdfd1234</p>
-          </li>
-          <li>
-            <p>비밀번호</p>
-            <p>sdfD566</p>
           </li>
           <li>
             <p>트레이너 코드</p>

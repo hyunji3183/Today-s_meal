@@ -1,8 +1,9 @@
 "use client"
+import axios from 'axios';
 import join from './join.module.scss'
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 export default function page() {
   const nav = useRouter();
@@ -13,16 +14,156 @@ export default function page() {
   const arrowClick = ()=>{
     nav.push('/pages/member/login')
   }
-  const mainClick = ()=>{
-    nav.push('/pages/list/mainList')
-  }
-
   const trainerClick = ()=>{
-    setTypes('t')
+    setTypes('t');
   }
   const memberClick = ()=>{
-    setTypes('m')
+    setTypes('m');
   }
+
+  //입력값 받기
+  const [formData, setFormData] = useState({
+    name: '',
+    userid: '',
+    userpw: '',
+    checkpw: '',
+    trCode: ''
+  });
+  const getInput = function(e){
+    const {name, value} = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+  //트레이너 코드 생성
+  function makeTrCode(){
+    const char ='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+    let randomCode = '';
+
+    for(let i=0; i<6; i++){
+      const randomMix = Math.floor(Math.random()*char.length);
+      randomCode += char.charAt(randomMix);
+    }
+    return randomCode;
+  }
+
+  //받은 값 db에 맞춰 가공
+  let insertData;
+  if(types=='m'){
+    insertData ={
+      mb_name:formData.name,
+      mb_id:formData.userid,
+      mb_pw:formData.userpw,
+      mb_code:formData.trCode,
+      mb_img:'0',
+      mb_date:Date.now(),
+      mb_myMeal:[],
+      mb_judge:[]
+    }
+  }else if(types=='t'){
+    insertData ={
+      tr_name:formData.name,
+      tr_id:formData.userid,
+      tr_pw:formData.userpw,
+      tr_code:makeTrCode(),
+      tr_img:'0',
+      tr_date:Date.now(),
+      tr_totalMeal:[],
+      tr_family:[],
+      tr_judge:[]
+    }
+  }
+  //아이디 중복 확인
+  const [isIdOk,setIsIdOk]=useState(false);
+  const idCheck = async (e)=>{
+    e.preventDefault();
+    const send = {id:formData.userid}
+    let res;
+    if(types=='t'){
+      res = await axios.post("http://localhost:3000/tr/idCheck",send)
+      console.log(res.data);
+    }else{
+      res = await axios.post("http://localhost:3000/mb/idCheck",send)
+      console.log(res.data);
+    }
+
+    if(res.data==false){
+      alert('이미 사용 중인 아이디입니다')
+      return;
+    }else{
+      alert('사용 가능한 아이디입니다')
+      setIsIdOk(true);
+      return;
+    }
+  }
+
+  //가입하기 클릭시 유효성 검사 후 DB로 보냄
+  const dataSubmit = async (e)=>{
+    e.preventDefault();
+    console.log(insertData);
+
+    //아이디 체크
+    let regId = /^[A-Za-z0-9]+$/;
+    if(!regId.test(formData.userid)){
+      alert('아이디는 영문 또는 숫자로 입력해 주세요');
+      return
+    }
+    if(isIdOk==false){
+      alert('아이디 중복 확인을 해주세요')
+      return;
+    }
+    //비밀번호 체크
+    let regPw = /^(?=.*[A-Za-z])(?=.*\d).{8,15}$/;
+    if( !regPw.test(formData.userpw) ){
+      alert('영문+숫자 포함 8-15자로 입력해 주세요');
+      return
+    }
+    //비밀번호 재확인
+    if(formData.userpw != formData.checkpw){
+      alert('비밀번호가 일치하지 않습니다');
+      return
+    }
+    //미입력방지
+    if( !formData.name || !formData.userid || !formData.userpw || !formData.checkpw ){
+      alert('모든 정보를 입력해 주세요')
+      return;
+    }
+
+    //트레이너 코드 확인
+    const codeSend = {code:formData.trCode, mb_id:formData.userid}
+    let res, codeRes;
+    //일반회원일 경우만 진행
+    if(types=='m'){
+      if(!formData.trCode){//미입력방지
+        alert('모든 정보를 입력해 주세요'); return;
+      }
+      res = await axios.post("http://localhost:3000/mb/codeCheck",codeSend)
+      console.log(res.data);
+      codeRes = res.data;
+
+      if(codeRes==false){
+        alert('존재하지 않는 트레이너 코드입니다.');
+        return;
+      }
+      
+    }
+
+    //트레이너/일반회원 DB구분
+    if(types=='t'){
+      axios
+      .post("http://localhost:3000/tr/insert",insertData)
+      .then(res=>{console.log(res.data);}) 
+    }
+    if(types=='m'){
+      axios
+      .post("http://localhost:3000/mb/insert",insertData)
+      .then(res=>{ console.log(res.data);}) 
+    }
+    
+    alert('가입완료')
+  }
+
   return (
     <div className={join.join_wrap}>
       <header>
@@ -54,54 +195,86 @@ export default function page() {
             <div className={join.trainer_wrap} ref={trainerCon}>
               <label>
                 이름
-                <input type="text" placeholder='이름을 입력해 주세요.' maxlength='8'/>
+                <input 
+                  type="text" maxlength='8'
+                  placeholder='이름을 입력해 주세요.' 
+                  onChange={getInput} name="name"
+                />
               </label>
               <label>
                 아이디
                 <div>
-                  <input type="text" placeholder='아이디를 입력해 주세요.'/>
-                  <p>중복확인</p>
+                  <input 
+                    type="text" placeholder='아이디를 입력해 주세요.'
+                    onChange={getInput} name="userid"
+                  />
+                  <p onClick={idCheck}>중복확인</p>
                 </div>
               </label>
               <label>
                 비밀번호
-                <input type="text" placeholder='영어 대소문자, 숫자 조합의 8-15자'/>
+                <input 
+                  type="text" placeholder='영어 대소문자, 숫자 조합의 8-15자'
+                  onChange={getInput} name="userpw"
+                />
               </label>
               <label>
                 비밀번호 재확인
-                <input type="text" placeholder='비밀번호를 입력해 주세요.'/>
-              </label>
-              <label>
-                트레이너 코드
-                <input type="text" placeholder='정확한 코드를 입력해 주세요.'/>
+                <input 
+                  type="text" placeholder='비밀번호를 입력해 주세요.'
+                  onChange={getInput} name="checkpw"
+                />
               </label>
             </div>
           :
             <div className={join.member_wrap} ref={memberCon}>
               <label>
                 이름
-                <input type="text" placeholder='이름을 입력해 주세요.' maxlength='8'/>
+                <input 
+                  type="text" maxlength='8'
+                  placeholder='이름을 입력해 주세요.' 
+                  onChange={getInput} name="name"
+                />
               </label>
               <label>
                 아이디
                 <div>
-                  <input type="text" placeholder='아이디를 입력해 주세요.'/>
-                  <p>중복확인</p>
+                  <input 
+                    type="text" placeholder='아이디를 입력해 주세요.'
+                    onChange={getInput} name="userid"
+                  />
+                  <p onClick={idCheck}>중복확인</p>
                 </div>
               </label>
               <label>
                 비밀번호
-                <input type="text" placeholder='영어 대소문자, 숫자 조합의 8-15자'/>
+                <input 
+                  type="text" placeholder='영어 대소문자, 숫자 조합의 8-15자'
+                  onChange={getInput} name="userpw"
+                />
               </label>
               <label>
                 비밀번호 재확인
-                <input type="text" placeholder='비밀번호를 입력해 주세요.'/>
+                <input 
+                  type="text" placeholder='비밀번호를 입력해 주세요.'
+                  onChange={getInput} name="checkpw"
+                />
+              </label>
+              <label>
+                트레이너 코드
+                <input 
+                  type="text" placeholder='정확한 코드를 입력해 주세요.'
+                  onChange={getInput} name="trCode"
+                />
               </label>
             </div>
         }
+        <input 
+          type="submit" value="가입하기" 
+          className={join.join_submit}
+          onClick={dataSubmit}
+        />
       </form>
-
-      <footer onClick={mainClick}>가입하기</footer>
     </div>
   )
 }

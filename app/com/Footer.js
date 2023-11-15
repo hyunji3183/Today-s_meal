@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 export default function Footer() {
   const nav = useRouter();
   const homeClick = ()=>{
-    nav.push('/pages/list/mainList')
+    nav.push('/pages/List/mainList')
+  }
+  const registrationClick = ()=>{
+    nav.push('/pages/Write/upload')
   }
   const mypageClick = ()=>{
-    nav.push('/pages/member/mypage')
+    nav.push('/pages/Member/mypage')
   }
   return (
     <footer>
@@ -22,7 +25,7 @@ export default function Footer() {
           <figure><img src='/diet.png' alt='식단'/></figure>
           <p>식단</p>
         </li>
-        <li>
+        <li onClick={registrationClick}>
           <figure><img src='/meal_registration.png' alt='식단등록'/></figure>
           <p>식단등록</p>
         </li>

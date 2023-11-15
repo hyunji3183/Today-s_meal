@@ -1,0 +1,129 @@
+.upload_wrap{
+  background-color: #E8EDF1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  header{
+    display: flex;
+    height: 65px;
+    align-items: center;
+    justify-content: center;
+    figure{
+      margin-right: 10px;
+      width: 30px;
+      img{
+        width: 100%;
+      }
+    }
+    p{
+      font-size: 28px;
+      font-family: 'Han_Sans';
+      color:#5498FF;
+    }
+  }
+  >form{
+    .con{
+      margin: 0 auto 35px;
+      max-width: 440px;
+      background-color: #fff;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+      border-radius: 20px;
+      padding:20px;
+      .con_img{
+        margin-bottom: 20px;
+        >label{
+        width: 100px;
+        height: 100px;
+        background-color: #D9D9D9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border-radius: 15px;
+        font-size: 14px;
+        font-family: "NotoSansKR-Regular";
+        cursor: pointer;
+        }
+        >input{
+          display: none;
+        }
+      }
+      .con_txt{
+        margin-bottom: 30px;
+        >textarea{
+          background-color: #E4EFFF;
+          border-radius: 15px;
+          height: 180px;
+          padding: 20px;
+          width: 100%;
+          font-size: 16px;
+          color: #707070;
+          resize: none;
+          border: none;
+          outline: none;
+        }
+      }
+      .con_choice{
+        font-family: "NotoSansKR-Medium";
+        >p{
+          font-size: 15px;
+          margin-bottom: 10px;
+        }
+        >ul{
+          display: flex;
+          margin-bottom: 30px;
+          li{
+            color: #fff;
+            font-size: 14px;
+            width: 66px;
+            height: 38px;
+            border-radius: 50px;
+            background-color: #D9D9D9;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          li.actives{
+            color:#5498FF;
+            background-color: #E4EFFF;
+          }
+        }
+      }
+      .con_share{
+        font-family: "NotoSansKR-Medium";
+        >p{
+          font-size: 15px;
+          margin-bottom: 10px;
+        }
+        >label{
+          font-size: 14px;
+          color: #707070;
+          display: flex;
+          align-items: center;
+          gap: 5px;      
+          >input{
+            // accent-color:#5498FF;
+          }
+        }
+      }
+    }
+    .btn{
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      >input{
+        width: 440px;
+        height: 62px;
+        font-size: 15px;
+        border-radius: 20px;
+        background-color: #5498FF;
+        color: #fff;
+        font-family: "NotoSansKR-Medium";
+        cursor: pointer;
+      }
+    }
+  }
+}
