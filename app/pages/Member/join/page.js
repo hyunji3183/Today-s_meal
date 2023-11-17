@@ -3,14 +3,9 @@ import axios from 'axios';
 import join from './join.module.scss'
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 export default function page() {
-
-  useEffect(()=>{
-    axios.get('/api/member?type=tr');
-    axios.get('/api/member?type=mb');
-  },[])
 
   const nav = useRouter();
   const trainerCon = useRef();
@@ -18,7 +13,7 @@ export default function page() {
   const [types , setTypes] = useState('m')
   
   const arrowClick = ()=>{
-    nav.push('/pages/Member/login')
+    nav.push('/pages/member/login')
   }
   const trainerClick = ()=>{
     setTypes('t');
@@ -62,10 +57,11 @@ export default function page() {
       mb_id:formData.userid,
       mb_pw:formData.userpw,
       mb_code:formData.trCode,
-      mb_img:'0',
+      mb_img:'/character2.png',
       mb_date:Date.now(),
       mb_myMeal:[],
-      mb_judge:[]
+      mb_like:[],
+      mb_dislike:[]
     }
   }else if(types=='t'){
     insertData ={
@@ -73,11 +69,11 @@ export default function page() {
       tr_id:formData.userid,
       tr_pw:formData.userpw,
       tr_code:makeTrCode(),
-      tr_img:'0',
+      tr_img:'/character2.png',
       tr_date:Date.now(),
       tr_totalMeal:[],
       tr_family:[],
-      tr_judge:[]
+      tr_needJudge:[]
     }
   }
   //아이디 중복 확인
