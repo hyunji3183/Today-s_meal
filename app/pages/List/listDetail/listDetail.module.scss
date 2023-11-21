@@ -1,0 +1,116 @@
+.listDetail_wrap{
+  width: 100%;
+  background-color: #fff;
+  max-width: 480px;
+  height: 100vh;
+  margin: 0 auto;
+  header{
+    border-bottom: 1px solid #E2E2E2;
+    height: 65px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 480px;
+    z-index: 1;
+    background-color: #fff;
+    >figure{
+      cursor: pointer;
+      &:first-child{
+        position: absolute;
+        top:calc(50% - 12px);
+        left: 20px;
+      }
+      &:last-child{
+        position: absolute;
+        top:calc(50% - 12px);
+        right: 20px;
+      }
+    }
+    p{
+      font-size: 20px;
+      font-family: "NotoSansKR-Medium";
+    }
+  }
+  .con{
+    padding-top: 100px;
+  }
+  .write{
+    transform: translateY(230px);
+    transition: .7s;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 480px;
+    z-index: 2;
+    background-color: #5498FF;
+    border-radius: 30px 30px 0 0;
+    padding: 25px 20px;
+    .write_list{
+      margin-bottom: 18px;
+      box-shadow: 0px 0px 10px #496DA3;
+      border-radius: 20px;
+      >button{
+        font-family: "NotoSansKR-Regular";
+        padding: 15px 0;
+        background-color: #fff;
+        display: block;
+        width: 100%;
+        border-radius:20px 20px 0 0;
+        // text-align: left;
+        font-size: 15px;
+        >span{
+          color: #5498FF;
+        }
+        &:last-child{
+          border-top: 1px solid #E8EDF1;
+          border-radius: 0 0 20px 20px;
+        }
+      }
+    }
+    >button{
+      box-shadow: 0px 0px 10px #496DA3;
+      color: #707070;
+      font-size: 15px;
+      font-family: "NotoSansKR-Medium";
+      background-color: #fff;
+      border-radius: 15px;
+      display: block;
+      width: 100%;
+      padding: 15px 0;
+    }
+  }
+  .comment_wrap{
+    max-width: 480px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border: 1px solid #E2E2E2;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    justify-content: space-between;
+    >input{
+      font-size: 16px;
+      color: #707070;
+      font-family: "NotoSansKR-Regular";
+      &:last-child{
+        color: #fff;
+        background-color: #5498FF;
+        width: 82px;
+        height: 38px;
+        border-radius: 19px;
+        cursor: pointer;
+      }
+    }
+  }
+}

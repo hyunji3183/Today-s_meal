@@ -61,7 +61,7 @@ export default function page() {
       mb_date:Date.now(),
       mb_myMeal:[],
       mb_like:[],
-      mb_dislike:[]
+      mb_hate:[]
     }
   }else if(types=='t'){
     insertData ={

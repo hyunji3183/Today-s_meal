@@ -10,6 +10,7 @@ export default function page() {
   const [DBdata,setDBdata]=useState();
   const [haveTr,setHaveTr]=useState(false);
   const [familyData,setFamilyData]=useState();
+  const [mylistData,setMylistData]=useState();
   
 
   useEffect(()=>{
@@ -22,7 +23,6 @@ export default function page() {
         res = await axios.post("/api/member?type=tr&mode=bring",{isTr});
         setDBdata(res.data);
         setHaveTr(true);
-
       }
       if(isMb != null){//일반회원
         res = await axios.post("/api/member?type=mb&mode=bring",{isMb});
@@ -50,12 +50,12 @@ export default function page() {
     if(haveTr){
       const newName = {id:DBdata?.tr_id, name:value.nameInput}
       const resT = await axios.post("/api/member?type=tr&mode=nameUpdate", newName)
-      console.log(resT.data);
+      // console.log(resT.data);
     }
     else{
       const newName = {id:DBdata?.mb_id, name:value.nameInput}
       const resM = await axios.post("/api/member?type=mb&mode=nameUpdate", newName)
-      console.log(resM.data);
+      // console.log(resM.data);
     }
   }
   
@@ -76,7 +76,7 @@ export default function page() {
     setFamilyData(resFamily.data);
     console.log(resFamily.data);
   }
-  //괸리 회원 삭제
+  //관리 회원 삭제
   const deleteMember = async function(id){
     //삭제하고 db에 반영
     const removeData = {tr_id:DBdata?.tr_id, removeId:id}

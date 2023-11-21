@@ -8,7 +8,7 @@ export default function Footer() {
   const homeClick = ()=>{
     nav.push('/pages/list/mainList')
   }
-  const listClick = ()=>{
+  const dietClick = ()=>{
     nav.push('/pages/list/mealList')
   }
   const registrationClick = ()=>{
@@ -20,19 +20,19 @@ export default function Footer() {
   return (
     <footer>
       <ul>
-        <li onClick={homeClick} style={{cursor:'pointer'}}>
+        <li onClick={homeClick}>
           <figure><img src='/home.png' alt='홈'/></figure>
           <p>홈</p>
         </li>
-        <li onClick={listClick} style={{cursor:'pointer'}}>
-          <figure><img src='/diet.png' alt='식단'/></figure>
+        <li>
+          <figure onClick={dietClick}><img src='/diet.png' alt='식단'/></figure>
           <p>식단</p>
         </li>
-        <li onClick={registrationClick} style={{cursor:'pointer'}}>
+        <li onClick={registrationClick}>
           <figure><img src='/meal_registration.png' alt='식단등록'/></figure>
           <p>식단등록</p>
         </li>
-        <li onClick={mypageClick} style={{cursor:'pointer'}}>
+        <li onClick={mypageClick}>
           <figure><img src='/mypage.png' alt='마이페이지'/></figure>
           <p>마이페이지</p>
         </li>
