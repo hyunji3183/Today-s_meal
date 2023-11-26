@@ -1,13 +1,14 @@
-.listDetail_wrap{
+.listDetail_wrap {
   width: 100%;
   background-color: #fff;
   max-width: 480px;
   height: 100vh;
   margin: 0 auto;
-  header{
+
+  header {
     border-bottom: 1px solid #E2E2E2;
     height: 65px;
-    display:flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -19,28 +20,34 @@
     max-width: 480px;
     z-index: 1;
     background-color: #fff;
-    >figure{
+
+    >figure {
       cursor: pointer;
-      &:first-child{
+
+      &:first-child {
         position: absolute;
-        top:calc(50% - 12px);
+        top: calc(50% - 12px);
         left: 20px;
       }
-      &:last-child{
+
+      &:last-child {
         position: absolute;
-        top:calc(50% - 12px);
+        top: calc(50% - 12px);
         right: 20px;
       }
     }
-    p{
+
+    p {
       font-size: 20px;
       font-family: "NotoSansKR-Medium";
     }
   }
-  .con{
+
+  .con {
     padding-top: 100px;
   }
-  .write{
+
+  .write {
     transform: translateY(230px);
     transition: .7s;
     position: fixed;
@@ -53,29 +60,34 @@
     background-color: #5498FF;
     border-radius: 30px 30px 0 0;
     padding: 25px 20px;
-    .write_list{
+
+    .write_list {
       margin-bottom: 18px;
       box-shadow: 0px 0px 10px #496DA3;
       border-radius: 20px;
-      >button{
+
+      >button {
         font-family: "NotoSansKR-Regular";
         padding: 15px 0;
         background-color: #fff;
         display: block;
         width: 100%;
-        border-radius:20px 20px 0 0;
+        border-radius: 20px 20px 0 0;
         // text-align: left;
         font-size: 15px;
-        >span{
+
+        >span {
           color: #5498FF;
         }
-        &:last-child{
+
+        &:last-child {
           border-top: 1px solid #E8EDF1;
           border-radius: 0 0 20px 20px;
         }
       }
     }
-    >button{
+
+    >button {
       box-shadow: 0px 0px 10px #496DA3;
       color: #707070;
       font-size: 15px;
@@ -87,7 +99,8 @@
       padding: 15px 0;
     }
   }
-  .comment_wrap{
+
+  .comment_wrap {
     max-width: 480px;
     position: fixed;
     bottom: 0;
@@ -99,11 +112,13 @@
     align-items: center;
     padding: 12px 20px;
     justify-content: space-between;
-    >input{
+
+    >input {
       font-size: 16px;
       color: #707070;
       font-family: "NotoSansKR-Regular";
-      &:last-child{
+
+      &:last-child {
         color: #fff;
         background-color: #5498FF;
         width: 82px;
