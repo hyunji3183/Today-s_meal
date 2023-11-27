@@ -1,0 +1,24 @@
+.mealList_wrap{
+  background-color: #E8EDF1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  >header{
+    display: flex;
+    height: 65px;
+    align-items: center;
+    justify-content: center;
+    figure{
+      margin-right: 10px;
+      width: 30px;
+      img{
+        width: 100%;
+      }
+    }
+    p{
+      font-size: 28px;
+      font-family: 'Han_Sans';
+      color:#5498FF;
+    }
+  }
+}
