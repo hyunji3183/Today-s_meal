@@ -84,6 +84,9 @@ export default function page() {
         post_trLike:'',
         post_judge:''
       }
+      axios
+      .post("/api/write?type=list&mode=insert",sendPost)
+      .then(res=>{ console.log(res.data);}) 
     })
 
     setTimeout(function() {

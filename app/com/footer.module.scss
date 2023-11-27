@@ -20,27 +20,27 @@
         width: 25px;
         height: 25px;
         margin: 0 auto 5px;
-        background:url("../../public/home.png");
+        background:url("/home.png");
         background-size: 100%;
         background-repeat: no-repeat;
       }
       &:nth-of-type(2){
         >figure{
-          background:url("../../public/diet.png");
+          background:url("/diet.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
       }
       &:nth-of-type(3){
         >figure{
-          background:url("../../public/meal_registration.png");
+          background:url("/meal_registration.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
       }
       &:nth-of-type(4){
         >figure{
-          background:url("../../public/mypage.png");
+          background:url("/mypage.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
@@ -53,6 +53,34 @@
     }
     >li.actives >p{
       color:#5498FF;
+    }
+    >li:nth-of-type(1) >figure.fig1{
+      width: 25px;
+      height: 25px;
+      background:url("/home_.png");
+      background-size: 100%;
+      background-repeat: no-repeat;
+    }
+    >li:nth-of-type(2) >figure.fig2{
+      width: 25px;
+      height: 25px;
+      background:url("/diet_.png");
+      background-size: 100%;
+      background-repeat: no-repeat;
+    }
+    >li:nth-of-type(3) >figure.fig3{
+      width: 25px;
+      height: 25px;
+      background:url("/meal_registration_.png");
+      background-size: 100%;
+      background-repeat: no-repeat;
+    }
+    >li:nth-of-type(4) >figure.fig4{
+      width: 25px;
+      height: 25px;
+      background:url("/mypage_.png");
+      background-size: 100%;
+      background-repeat: no-repeat;
     }
   }
 }

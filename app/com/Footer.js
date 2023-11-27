@@ -6,44 +6,55 @@ import { useRouter } from 'next/navigation';
 
 export default function Footer() {
   const nav = useRouter();
-  // const homeClick = ()=>{
-  //   nav.push('/pages/list/mainList')
-  // }
-  // const dietClick = ()=>{
-  //   nav.push('/pages/list/mealList')
-  // }
-  // const registrationClick = ()=>{
-  //   nav.push('/pages/write/upload')
-  // }
-  // const mypageClick = ()=>{
-  //   nav.push('/pages/member/mypage')
-  // }
   const footerUl = useRef();
-  useEffect(()=>{
+  useEffect(() => {
     const footerLi = footerUl.current.childNodes;
-    let num = 0;
-    footerLi.forEach((v,k)=>{
-      footerLi[0].childNodes[0].style = `background:url("/home_.png"); width: 25px; height: 25px; background-size: 100%; background-repeat: no-repeat;`
-      v.onclick = function(){
-        // v.classList.add(footer.actives)
-        if(num <= 3){
-          const footerFig = footerLi[num].childNodes[0];
-          num++
-          // footerFig.forEach((v2,k2)=>{
-          //   v2.onclick = function(){
-          //     v2.style = `display:none`
-          //   }
-          // })
-        }
-        
-        
+    const footerClick = (index) => {
+      footerLi.forEach((v, k) => {
+        v.classList.remove(footer.actives);
+        v.childNodes[0].classList.remove(footer.fig1, footer.fig2, footer.fig3, footer.fig4);
+      });
+
+      footerLi[index].classList.add(footer.actives);
+      const figure = footerLi[index].childNodes[0];
+
+      switch (index) {
+        case 0:
+          nav.push('/pages/list/mainList');
+          figure.classList.add(footer.fig1);
+          break;
+        case 1:
+          nav.push('/pages/list/mealList');
+          figure.classList.add(footer.fig2);
+          break;
+        case 2:
+          nav.push('/pages/write/upload');
+          figure.classList.add(footer.fig3);
+          break;
+        case 3:
+          nav.push('/pages/member/mypage');
+          figure.classList.add(footer.fig4);
+          break;
+        default:
+          break;
       }
-    })
-  },[])
+      localStorage.setItem('activeFooterIndex', String(index));
+    };
+
+    footerLi.forEach((v, k) => {
+      v.onclick = () => footerClick(k);
+    });
+
+    const storedIndex = localStorage.getItem('activeFooterIndex');
+    if (storedIndex !== null) {
+      footerClick(parseInt(storedIndex, 10));
+    }
+  }, [footerUl, nav]);
+
   return (
     <footer className={footer.footer_wrap}>
       <ul ref={footerUl}>
-        <li className={footer.actives}>
+        <li>
           <figure></figure>
           <p>홈</p>
         </li>
