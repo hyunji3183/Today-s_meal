@@ -21,35 +21,50 @@ export default function page() {
         nav.push('/pages/list/trainerEvaluation')
     }
 
-    let isCom, res;
+    let isTr, isMb, res;
     const [DBdata, setDBdata] = useState();
     useEffect(() => {
-        isCom = sessionStorage.getItem('com_id');
+        //세션값으로 로그인 db정보 찾아 가져오기
+        isTr = sessionStorage.getItem('tr_id');
+        isMb = sessionStorage.getItem('mb_id');
+
         const loginCheck = async function () {
-            if (isCom != null) {//일반회원
-                res = await axios.post("/api/list?type=com&mode=bring", { isCom });
+            if (isTr != null) {//트레이너
+                res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
                 setDBdata(res.data);
+                setHaveTr(true);
+            }
+            if (isMb != null) {//일반회원
+                res = await axios.post("/api/member?type=mb&mode=bring", { isMb });
+                setDBdata(res.data);
+                //일반회원-> 내가 작성한 식단 찾아 mb_myMeal에 해당 식단의 id 넣기
             }
         }
         loginCheck();
     }, [])
 
 
+    const [comData, setComData] = useState();
+    const [review, setReview] = useState([]);
+    const [getData, setGetData] = useState();
 
     const save_comment = async (e) => {
         e.preventDefault();
-        const formD = new FormData(e.target.text.value);
-        const taData = Object.fromEntries(formD);
-        console.log(formD);
-
+        const in_txt = e.target.text.value
+        const user_id = DBdata?._id;
         const info = {
-            com_text: taData.text,
+            com_text: in_txt,
             com_date: Date.now(),
+            com_user: user_id
         }
-
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
-        console.log(response);
+        setComData(response.data)
+        setReview(prevReview => [...prevReview, info])
+        const get_data = await axios.post('/api/list?type=com&mode=getData', info);
+        setGetData(get_data.data)
+        console.log(getData);
     }
+
 
     return (
         <div className={listDetail.listDetail_wrap}>
@@ -84,20 +99,28 @@ export default function page() {
             </div>
 
             <div className={listDetail.comment}>
-                <p>댓글 13</p>
+                <p>댓글 {review.length}</p>
                 <ul>
-                    <li>
-                        <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
-                        <div className={listDetail.comment_txt1}>
-                            <p>정우성</p>
-                            <span>방금 전</span>
-                            <p>샐러드 레시피 공유해주세요.</p>
-                            <div className={listDetail.comment_txt2}>
-                                <span>좋아요</span>
-                                <span>답글쓰기</span>
-                            </div>
-                        </div>
-                    </li>
+                    {review?.length <= 0 ? (
+                        <li>
+                            <p>작성된 댓글이 없습니다.</p>
+                        </li>
+                    ) : (
+                        review.map((item, key) => (
+                            <li key={key}>
+                                <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
+                                <div className={listDetail.comment_txt1}>
+                                    <p>정우성</p>
+                                    <span>방금 전</span>
+                                    <p>{item.com_text}</p>
+                                    <div className={listDetail.comment_txt2}>
+                                        <span>좋아요</span>
+                                        <span>답글쓰기</span>
+                                    </div>
+                                </div>
+                            </li>
+                        ))
+                    )}
                     <li>
                         <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
                         <div className={listDetail.comment_txt1}>
@@ -136,8 +159,6 @@ export default function page() {
                 <input type='text' name='text' placeholder='댓글 남기기' />
                 <input type='submit' value='등록' />
             </form>
-
-
         </div>
     )
 }

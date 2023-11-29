@@ -225,7 +225,7 @@ export default function page() {
               <label>
                 비밀번호
                 <input 
-                  type="text" placeholder='영어 대소문자, 숫자 조합의 8-15자'
+                  type="text" placeholder='영어,숫자 조합의 8-15자'
                   onChange={getInput} name="userpw"
                 />
               </label>
