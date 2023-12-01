@@ -94,9 +94,11 @@ async function postDB(type, mode, data) {
     if (type === 'com' && mode === 'getData') {
         const com_user_ID = data.com_user;
         console.log(com_user_ID);
-        result = await toMeal_member.find({ _id: com_user_ID })
+        result = await toMeal_member.find({ _id: com_user_ID }).toArray();
     }
+    
 
+    
     return result;
 }
 

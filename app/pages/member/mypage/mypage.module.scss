@@ -283,3 +283,55 @@
     }
   }
 }
+@media (max-width:479px){
+  .mypage_wrap{
+    .mypage{
+      .con{
+        display: block;
+        max-width: 90%;
+        margin: 0 auto 30px;
+        .con_left{
+          margin-bottom: 20px;
+          >figure{
+            margin-right: 0px;
+            margin-bottom: 20px;
+            margin: 0 auto;
+            &:nth-of-type(2){
+              right: 0;
+              text-align: center;
+            }
+          }
+        }
+        .bg{
+          >form{
+            max-width: 90%;
+            .bg_top{
+              width:100%;
+              height:100%;
+              >input{
+                margin: 0 50px 10px;
+              }
+            }
+            .bg_bot{
+              width: 100%;
+              height: 44px;
+            }
+          }
+        }
+        .con_right{
+          .con_right_li{
+            >ul{
+              justify-content: center;
+            }
+          }
+        }
+      }
+    }
+    .membership_wrap{
+      .membership{
+        max-width: 90%;
+        margin: 0 auto;
+      }
+    }
+  }
+}

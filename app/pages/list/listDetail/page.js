@@ -23,6 +23,10 @@ export default function page() {
 
     let isTr, isMb, res;
     const [DBdata, setDBdata] = useState();
+    const [UsName, setUsName] = useState();
+    const [TrName, setTrName] = useState();
+    const [UsImg, setUsImg] = useState();
+    const [TrImg, setTrImg] = useState();
     useEffect(() => {
         //세션값으로 로그인 db정보 찾아 가져오기
         isTr = sessionStorage.getItem('tr_id');
@@ -33,16 +37,20 @@ export default function page() {
                 res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
                 setDBdata(res.data);
                 setHaveTr(true);
+                setTrName(res.data.tr_name)
+                setTrImg(res.data.tr_img)
             }
             if (isMb != null) {//일반회원
                 res = await axios.post("/api/member?type=mb&mode=bring", { isMb });
                 setDBdata(res.data);
+                setUsName(res.data.mb_name)
+                setUsImg(res.data.mb_img)
                 //일반회원-> 내가 작성한 식단 찾아 mb_myMeal에 해당 식단의 id 넣기
             }
         }
         loginCheck();
     }, [])
-
+    console.log(DBdata);
 
     const [comData, setComData] = useState();
     const [review, setReview] = useState([]);
@@ -60,11 +68,11 @@ export default function page() {
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
         setComData(response.data)
         setReview(prevReview => [...prevReview, info])
-        const get_data = await axios.post('/api/list?type=com&mode=getData', info);
-        setGetData(get_data.data)
-        console.log(getData);
-    }
 
+        const get_data = await axios.get('/api/list?type=com&mode=getData', info);
+        setGetData(get_data.data)
+        console.log(get_data.data);
+    }
 
     return (
         <div className={listDetail.listDetail_wrap}>
@@ -108,9 +116,9 @@ export default function page() {
                     ) : (
                         review.map((item, key) => (
                             <li key={key}>
-                                <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
+                                <figure><img src={UsImg ? UsImg : TrImg} alt='회원 이미지' /></figure>
                                 <div className={listDetail.comment_txt1}>
-                                    <p>정우성</p>
+                                    <p>{UsName ? UsName : TrName}</p>
                                     <span>방금 전</span>
                                     <p>{item.com_text}</p>
                                     <div className={listDetail.comment_txt2}>

@@ -255,3 +255,51 @@
     cursor: pointer;
   }
 }
+@media (max-width:479px){
+  .join_wrap{
+    .joins{
+      max-width: 90%;
+      padding-bottom: 100px;
+      margin: 0 auto;
+      .trainer,.member{
+        width: 100%;
+      }
+      .trainer_wrap{
+        max-width: 100%;
+        label{
+          input{
+            width: 100%;
+          }
+          &:nth-of-type(2){
+            >div{
+              input{
+                margin-right: 10px;
+              }
+              p{
+                font-size: 11px;
+              }
+            }
+          }
+        }
+      }
+      .member_wrap{
+        max-width: 100%;
+        label{
+          input{
+            width: 100%;
+          }
+          &:nth-of-type(2){
+            >div{
+              input{
+                margin-right: 10px;
+              }
+              p{
+                font-size: 11px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
