@@ -36,7 +36,7 @@ export default function page() {
             if (isTr != null) {//트레이너
                 res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
                 setDBdata(res.data);
-                setHaveTr(true);
+                // setHaveTr(true);
                 setTrName(res.data.tr_name)
                 setTrImg(res.data.tr_img)
             }
@@ -50,11 +50,12 @@ export default function page() {
         }
         loginCheck();
     }, [])
-    console.log(DBdata);
+    // console.log(DBdata);
 
     const [comData, setComData] = useState();
     const [review, setReview] = useState([]);
     const [getData, setGetData] = useState();
+    const [pos, setPos] = useState();
 
     const save_comment = async (e) => {
         e.preventDefault();
@@ -71,8 +72,15 @@ export default function page() {
 
         const get_data = await axios.get('/api/list?type=com&mode=getData', info);
         setGetData(get_data.data)
-        console.log(get_data.data);
     }
+
+    //게시글 가져오기
+    const postLoad = async (e) => {
+        const get_pos = await axios.get('/api/list?type=pos&mode=getPos', info);
+        setPos(get_pos.data)
+        console.log(get_pos);
+    }
+
 
     return (
         <div className={listDetail.listDetail_wrap}>

@@ -10,6 +10,7 @@ export default function () {
   const [DBdata,setDBdata]=useState();
   const [haveTr,setHaveTr]=useState(false);
   const [myListData,setMyListData]=useState();
+
   useEffect(()=>{
     //세션값으로 로그인 db정보 찾아 가져오기
     isTr = sessionStorage.getItem('tr_id');
@@ -38,26 +39,23 @@ export default function () {
   const makeTrMealList = async function(){
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
     const trData = {tr_dbId:res.data._id, myFam:res.data.tr_family};
-    console.log(trData);
 
     //아이디로 내 회원 고유id 가져오기
     const resFamily = await axios.post("/api/list?type=tr&mode=familyGet",trData);
     const famIdArray = [];
     for(const obj of resFamily.data) {famIdArray.push(obj._id);}
-    console.log(famIdArray);
 
     //그 회원이 작성한 리스트 있으면 가져오기
     const resFamList = await axios.post("/api/list?type=tr&mode=familyNewList",famIdArray);
     //회원들의 식단 리스트 id를 한 배열에 담기
     const newListArray = [];
     for(const obj of resFamList.data) {newListArray.push(...obj.mbMeal_list);}
-    console.log(newListArray);
+    // console.log(newListArray);
 
     //DB확인 후 미평가 식단에 넣기
     const haveList = await axios.post("/api/list?type=tr&mode=listIDCheck",trData);
     if(haveList.data==0){
       //신규 DB생성
-      console.log('새로 디비 만들어야댐');
       const makeTrMeal = {
         trMeal_id:res.data._id, 
         trMeal_list:newListArray,
@@ -65,12 +63,11 @@ export default function () {
       };
       const makeList = await axios.post("/api/list?type=tr&mode=makeList",makeTrMeal);
     }else{
-      //기존 DB에 list추가
+      //기존 DB에 list추가후 미평가 리스트 갱신
       const addData ={
         trMeal_id:res.data._id, 
         trMeal_list:newListArray
       }
-      console.log();
       const addList = await axios.post("/api/list?type=tr&mode=listUpdate",addData);
     }
   }
@@ -81,7 +78,7 @@ export default function () {
 
     const resList = await axios.post("/api/list?type=mb&mode=listIDGet",listData);
     const haveList = await axios.post("/api/list?type=mb&mode=listIDCheck",listData);
-    console.log(resList.data);
+    // console.log(resList.data);
     
     if(haveList.data==0){
       //신규 DB생성

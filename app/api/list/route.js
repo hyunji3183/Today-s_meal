@@ -68,15 +68,24 @@ async function postDB(type, mode, data) {
         const whoseList = data.trMeal_id;
         const listArray = data.trMeal_list;
 
-        result = await toMeal_trainerMeal.updateOne(//전체 리스트 업데이트
-            { "mbMeal_id": whoseList }, { $set: { "trMeal_list": listArray } }
-        );
         await toMeal_trainerMeal.updateOne(//전체 리스트 업데이트
-            { "mbMeal_id": whoseList }, { $set: { "trMeal_list": listArray } }
+            { "trMeal_id": whoseList }, { $set: { "trMeal_list": listArray } }
         );
-        // result = await toMeal_trainerMeal.updateOne(//미평가 리스트 갱신
-        //     { "mbMeal_id": whoseList },{ $set:{"trMeal_needJudge": '???'}}
-        // );
+
+        //미평가 리스트 목록 반환하기
+        const { ObjectId } = require('mongodb');
+        const listArrayObjectIds = listArray.map(id => new ObjectId(id));
+        
+        const checkJudge = await toMeal_list.find({
+            _id: { $in: listArrayObjectIds },
+            post_judge: { $eq: ''  }
+        }).toArray();
+
+        const notYetJudge = checkJudge.map(obj=>obj._id.toString());
+        await toMeal_trainerMeal.updateOne(//미평가 리스트 업데이트
+            { "trMeal_id": whoseList }, { $set: { "trMeal_needJudge": notYetJudge } }
+        );
+        result = await toMeal_trainerMeal.find({ "trMeal_id": whoseList }).toArray();
     }
     //mealList 페이지
     //내가 올린 식단만 보기(일반멤버)
@@ -87,18 +96,22 @@ async function postDB(type, mode, data) {
         // result = await toMeal_list.find({post_user:{$in:mealListId}}).toArray();
     }
 
+    //댓글내용저장
     if (type === 'com' && mode === 'commentUpdate') {
         result = await toMeal_comment.insertOne(data);
     }
 
+    //댓글 작성자 고유번호 가져오기
     if (type === 'com' && mode === 'getData') {
         const com_user_ID = data.com_user;
-        console.log(com_user_ID);
         result = await toMeal_member.find({ _id: com_user_ID }).toArray();
     }
-    
 
-    
+    if (type === 'pos' && mode === 'getPos') {
+        result = await toMeal_comment.find(_id).toArray();
+    }
+
+
     return result;
 }
 

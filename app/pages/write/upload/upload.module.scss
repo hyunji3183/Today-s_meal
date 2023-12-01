@@ -170,3 +170,11 @@
     }
   }
 }
+@media (max-width:479px){
+  .upload_wrap{
+    >form{
+      width: 90%;
+      margin: 0 auto;
+    }
+  }
+}

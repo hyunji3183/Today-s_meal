@@ -219,7 +219,7 @@ export default function page() {
                   : 
                   <li>
                     <p>싫어요</p>
-                    <span>{DBdata?.mb_dislike.length}</span>
+                    {/* <span>{DBdata?.mb_dislike.length}</span> */}
                   </li>
                 }
               </ul>
