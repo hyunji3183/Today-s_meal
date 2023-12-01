@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function page() {
-  //세션값으로 로그인 db정보 찾아 가져오기
+  //세션값으로 로그인 db정보 찾아 가져오기\
   let isMb, res;
   const [DBdata,setDBdata]=useState();
   useEffect(()=>{
@@ -104,7 +104,7 @@ export default function page() {
       <form onSubmit={uploadFile}>
         <div className={upload.con}>
           <div className={upload.con_img}>
-            <label for='file' >
+            <label htmlFor='file' >
                 { imgToggle? '': '이미지 등록'}
               <input type='file' name='upload' id='file'
                     onChange={(e)=>{ fileChange(e); }}
@@ -125,7 +125,7 @@ export default function page() {
           </div>
           <div className={upload.con_share}>
             <p>식단을 공유 하시겠습니까?</p>
-            <label for='check'onChange={getInput}>
+            <label htmlFor='check'onChange={getInput}>
               <input type='checkbox' name='check' id='check' />
               <span></span>
               <p>식단공유</p>
@@ -136,7 +136,6 @@ export default function page() {
           <input type='submit' value='식단 등록'/>
         </div>
       </form>
-
       <Footer/>
     </div>
   )

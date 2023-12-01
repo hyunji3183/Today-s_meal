@@ -1,4 +1,4 @@
-.footer_wrap{
+.footer_wrap {
   max-width: 480px;
   position: fixed;
   bottom: 0;
@@ -7,78 +7,81 @@
   right: 0;
   background-color: #fff;
   border-radius: 20px 20px 0 0;
-  box-shadow: 0px -2px 10px rgba(0,0,0,0.05);
-  >ul{
+  box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.05);
+  > ul {
     display: flex;
     justify-content: space-between;
     padding: 12px 26px;
     width: 100%;
-    >li{
+    > li {
       width: 60px;
       cursor: pointer;
-      >figure{
-        width: 25px;
-        height: 25px;
-        margin: 0 auto 5px;
-        background:url("/home.png");
-        background-size: 100%;
-        background-repeat: no-repeat;
+      a {
+        > figure {
+          width: 25px;
+          height: 25px;
+          margin: 0 auto 5px;
+          background: url("/home.png");
+          background-size: 100%;
+          background-repeat: no-repeat;
+        }
+
+        > p {
+          font-size: 13px;
+          text-align: center;
+          font-family: "NotoSansKR-Regular";
+        }
       }
-      &:nth-of-type(2){
-        >figure{
-          background:url("/diet.png");
+      &:nth-of-type(2) {
+        > a figure {
+          background: url("/diet.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
       }
-      &:nth-of-type(3){
-        >figure{
-          background:url("/meal_registration.png");
+      &:nth-of-type(3) {
+        > a figure {
+          background: url("/meal_registration.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
       }
-      &:nth-of-type(4){
-        >figure{
-          background:url("/mypage.png");
+      &:nth-of-type(4) {
+        > a figure {
+          background: url("/mypage.png");
           background-size: 100%;
           background-repeat: no-repeat;
         }
       }
-      >p{
-        font-size: 13px;
-        text-align: center;
-        font-family: "NotoSansKR-Regular";
-      }
     }
-    >li.actives >p{
-      color:#5498FF;
+    > li.actives > a > p {
+      color: #5498ff;
     }
-    >li:nth-of-type(1) >figure.fig1{
+    > li:nth-of-type(1) > a.fig1 > figure {
       width: 25px;
       height: 25px;
-      background:url("/home_.png");
+      background: url("/home_.png");
       background-size: 100%;
       background-repeat: no-repeat;
     }
-    >li:nth-of-type(2) >figure.fig2{
+    > li:nth-of-type(2) > a.fig2 > figure {
       width: 25px;
       height: 25px;
-      background:url("/diet_.png");
+      background: url("/diet_.png");
       background-size: 100%;
       background-repeat: no-repeat;
     }
-    >li:nth-of-type(3) >figure.fig3{
+    > li:nth-of-type(3) > a.fig3 > figure {
       width: 25px;
       height: 25px;
-      background:url("/meal_registration_.png");
+      background: url("/meal_registration_.png");
       background-size: 100%;
       background-repeat: no-repeat;
     }
-    >li:nth-of-type(4) >figure.fig4{
+    > li:nth-of-type(4) > a.fig4 > figure {
       width: 25px;
       height: 25px;
-      background:url("/mypage_.png");
+      background: url("/mypage_.png");
       background-size: 100%;
       background-repeat: no-repeat;
     }

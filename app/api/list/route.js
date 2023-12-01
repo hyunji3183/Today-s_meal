@@ -75,13 +75,13 @@ async function postDB(type, mode, data) {
         //미평가 리스트 목록 반환하기
         const { ObjectId } = require('mongodb');
         const listArrayObjectIds = listArray.map(id => new ObjectId(id));
-        
+
         const checkJudge = await toMeal_list.find({
             _id: { $in: listArrayObjectIds },
-            post_judge: { $eq: ''  }
+            post_judge: { $eq: '' }
         }).toArray();
 
-        const notYetJudge = checkJudge.map(obj=>obj._id.toString());
+        const notYetJudge = checkJudge.map(obj => obj._id.toString());
         await toMeal_trainerMeal.updateOne(//미평가 리스트 업데이트
             { "trMeal_id": whoseList }, { $set: { "trMeal_needJudge": notYetJudge } }
         );
@@ -107,10 +107,17 @@ async function postDB(type, mode, data) {
         result = await toMeal_member.find({ _id: com_user_ID }).toArray();
     }
 
-    if (type === 'pos' && mode === 'getPos') {
-        result = await toMeal_comment.find(_id).toArray();
-    }
+    // MongoDB에서 제공하는 ObjectId를 사용하기 위해 import
+    const { ObjectId } = require('mongodb');
 
+    // if (type === 'pos' && mode === 'getPos') {
+    //     const objectId = new ObjectId(_id); // _id를 ObjectId로 변환
+    //     console.log(objectId);
+    //     console.log('sd2fs1a23f1s3');
+    //     console.log(_id);
+
+    //     result = await toMeal_list.find({ _id: objectId }).toArray();
+    // }
 
     return result;
 }

@@ -21,6 +21,7 @@ export default function page() {
         nav.push('/pages/list/trainerEvaluation')
     }
 
+
     let isTr, isMb, res;
     const [DBdata, setDBdata] = useState();
     const [UsName, setUsName] = useState();
@@ -52,6 +53,27 @@ export default function page() {
     }, [])
     // console.log(DBdata);
 
+    const formatTimeAgo = (dateString) => {
+        const start = new Date(dateString);
+        const end = new Date();
+
+        const seconds = Math.floor((end.getTime() - start.getTime()) / 1000);
+        if (seconds < 60) return '방금 전';
+
+        const minutes = seconds / 60;
+        if (minutes < 60) return `${Math.floor(minutes)}분 전`;
+
+        const hours = minutes / 60;
+        if (hours < 24) return `${Math.floor(hours)}시간 전`;
+
+        const days = hours / 24;
+        if (days < 7) return `${Math.floor(days)}일 전`;
+
+        return `${start.toLocaleDateString()}`;
+    };
+
+
+
     const [comData, setComData] = useState();
     const [review, setReview] = useState([]);
     const [getData, setGetData] = useState();
@@ -61,25 +83,25 @@ export default function page() {
         e.preventDefault();
         const in_txt = e.target.text.value
         const user_id = DBdata?._id;
+
         const info = {
             com_text: in_txt,
             com_date: Date.now(),
             com_user: user_id
         }
+
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
-        setComData(response.data)
-        setReview(prevReview => [...prevReview, info])
+        setComData(response.data);
+        
+        const formattedTime = formatTimeAgo(info.com_date);
+        setReview((prevReview) => [...prevReview, { ...info, formattedTime }]);
 
         const get_data = await axios.get('/api/list?type=com&mode=getData', info);
         setGetData(get_data.data)
     }
 
-    //게시글 가져오기
-    const postLoad = async (e) => {
-        const get_pos = await axios.get('/api/list?type=pos&mode=getPos', info);
-        setPos(get_pos.data)
-        console.log(get_pos);
-    }
+    // const get_pos = await axios.get('/api/list?type=pos&mode=getPos');
+    // setPos(get_pos.data)
 
 
     return (

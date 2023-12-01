@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import footer from './footer.module.scss'
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Footer() {
   const nav = useRouter();
@@ -20,19 +21,19 @@ export default function Footer() {
 
       switch (index) {
         case 0:
-          nav.push('/pages/list/mainList');
+          // nav.push('/pages/list/mainList');
           figure.classList.add(footer.fig1);
           break;
         case 1:
-          nav.push('/pages/list/mealList');
+          // nav.push('/pages/list/mealList');
           figure.classList.add(footer.fig2);
           break;
         case 2:
-          nav.push('/pages/write/upload');
+          // nav.push('/pages/write/upload');
           figure.classList.add(footer.fig3);
           break;
         case 3:
-          nav.push('/pages/member/mypage');
+          // nav.push('/pages/member/mypage');
           figure.classList.add(footer.fig4);
           break;
         default:
@@ -55,20 +56,28 @@ export default function Footer() {
     <footer className={footer.footer_wrap}>
       <ul ref={footerUl}>
         <li>
-          <figure></figure>
-          <p>홈</p>
+          <Link href="/pages/list/mainList">
+            <figure></figure>
+            <p>홈</p>
+          </Link>
         </li>
         <li>
-          <figure></figure>
-          <p>식단</p>
+          <Link href="/pages/list/mealList">
+            <figure></figure>
+            <p>식단</p>
+          </Link>
         </li>
         <li>
-          <figure></figure>
-          <p>식단등록</p>
+          <Link href="/pages/write/upload">
+            <figure></figure>
+            <p>식단등록</p>
+          </Link>
         </li>
         <li>
-          <figure></figure>
-          <p>마이페이지</p>
+          <Link href="/pages/member/mypage">
+            <figure></figure>
+            <p>마이페이지</p>
+          </Link>
         </li>
       </ul>
     </footer>
