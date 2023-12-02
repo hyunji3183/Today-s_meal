@@ -4,6 +4,7 @@ import mypage from './mypage.module.scss'
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import Loading from '@/app/com/loading';
 
 export default function page() {
   let isTr, isMb, res;
@@ -131,7 +132,7 @@ export default function page() {
         window.location.reload();
     }, 1000);
   }
-  
+  if(!DBdata){ return <Loading/>}
   return (
     <div className={mypage.mypage_wrap}>
       <div className={mypage.mypage} ref={defaultPage}>
@@ -192,10 +193,10 @@ export default function page() {
                     }
                   </p>
                   <span>
-                    {
+                    {/* {
                       haveTr?
                       DBdata?.tr_totalMeal.length : DBdata?.mb_myMeal.length
-                    }
+                    } */}
                   </span>
                 </li>
                 <li>
@@ -205,9 +206,9 @@ export default function page() {
                     }
                   </p>
                   <span>
-                    {
+                    {/* {
                       haveTr? DBdata?.tr_needJudge.length: DBdata?.mb_like.length
-                    }
+                    } */}
                   </span>
                 </li>
                 {
@@ -269,11 +270,11 @@ export default function page() {
             <ul>
               <li>
                 <p>총 식단</p>
-                <span>{DBdata?.tr_totalMeal.length}</span>
+                {/* <span>{DBdata?.tr_totalMeal.length}</span> */}
               </li>
               <li>
                 <p>미평가</p>
-                <span>{DBdata?.tr_needJudge.length}</span>
+                {/* <span>{DBdata?.tr_needJudge.length}</span> */}
               </li>
               <li>
                 <p>회원</p>

@@ -1,5 +1,6 @@
 "use client"
 import Footer from '@/app/com/Footer';
+import Loading from '@/app/com/loading';
 import mainList from './mainList.module.scss'
 import { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -113,18 +114,21 @@ export default function () {
     faceImg.current.classList.toggle(mainList.faces)
   }
   useEffect(() => {
-    const faceLi = faceIcons.current.childNodes;
-    let num = 0;
-    faceLi.forEach((v,k)=>{
-      v.onclick = function(){
-        const cn = v.childNodes;
-        cn[num].style = `background:url("/${k+1}_1.png"); width:25px; height:25px; background-size: 100% 100%;`
-      }
-    })
-  },[]);
+    if (faceIcons.current) {
+      const faceLi = faceIcons.current.childNodes;
+      let num = 0;
+      faceLi.forEach((v, k) => {
+        v.onclick = function () {
+          const cn = v.childNodes;
+          cn[num].style = `background:url("/${k + 1}_1.png"); width:25px; height:25px; background-size: 100% 100%;`;
+        };
+      });
+    }
+  }, [faceIcons]);
   const txtPlus = ()=>{
     nav.push('/pages/list/listDetail')
   }
+  if(!DBdata){ return <Loading/>}
   return (
     <div className={mainList.mainList_wrap}>
       <header>
