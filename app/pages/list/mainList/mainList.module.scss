@@ -3,6 +3,7 @@
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  padding-bottom: 80px;
   header {
     display: flex;
     height: 65px;
@@ -22,7 +23,6 @@
     }
   }
   .con {
-    padding-bottom: 80px;
     > ul {
       > li {
         margin: 0 auto 20px;
@@ -55,6 +55,10 @@
                 > span {
                   color: #5498ff;
                   font-family: "NotoSansKR-Medium";
+                  &:nth-of-type(2){
+                    color:#000;
+                    font-family: "NotoSansKR-Regular";
+                  }
                 }
               }
               > span {
@@ -72,7 +76,7 @@
             text-align: center;
             margin-bottom: 20px;
             img {
-              height: 350px;
+              height:200px;
               width: 100%;
               object-fit: cover;
               border-radius: 15px;
@@ -275,6 +279,7 @@
 }
 @media (max-width: 479px) {
   .mainList_wrap {
+    max-width: 100%;
     .con {
       width: 90%;
       margin: 0 auto;

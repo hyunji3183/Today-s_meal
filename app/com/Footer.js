@@ -52,8 +52,8 @@ export default function Footer() {
   return (
     <footer className={footer.footer_wrap}>
       <ul ref={footerUl}>
-        <li>
-          <Link href="/pages/list/mainList">
+        <li className={footer.actives}>
+          <Link href="/pages/list/mainList" className={footer.fig1}>
             <figure></figure>
             <p>홈</p>
           </Link>

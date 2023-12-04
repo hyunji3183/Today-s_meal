@@ -9,6 +9,7 @@ import Loading from '@/app/com/loading';
 export default function page() {
   let isTr, isMb, res;
   const [DBdata,setDBdata]=useState();
+  const [mealDBdata,setMealDBdata]=useState();
   const [haveTr,setHaveTr]=useState(false);
   const [familyData,setFamilyData]=useState();
   const [mylistData,setMylistData]=useState();
@@ -24,10 +25,18 @@ export default function page() {
         res = await axios.post("/api/member?type=tr&mode=bring",{isTr});
         setDBdata(res.data);
         setHaveTr(true);
+
+        let trMeal_id = res.data._id;
+        const resMeal= await axios.post("/api/member?type=tr&mode=getMeal",{trMeal_id});
+        setMealDBdata(resMeal.data);
       }
       if(isMb != null){//일반회원
         res = await axios.post("/api/member?type=mb&mode=bring",{isMb});
         setDBdata(res.data);
+
+        let mbMeal_id = res.data._id;
+        const resMeal= await axios.post("/api/member?type=mb&mode=getMeal",{mbMeal_id});
+        setMealDBdata(resMeal.data);
       }
     }
     loginCheck();
@@ -37,6 +46,7 @@ export default function page() {
   const names = useRef();
   const members = useRef();
   const defaultPage = useRef();
+  
 
   //이름 클릭시 이름변경창 팝업
   const nameClick = ()=>{
@@ -46,7 +56,7 @@ export default function page() {
   const changeName = async function(e){
     const formdata = new FormData(e.target);
     const value = Object.fromEntries(formdata);
-    console.log(value.nameInput);
+    // console.log(value.nameInput);
 
     if(haveTr){
       const newName = {id:DBdata?.tr_id, name:value.nameInput}
@@ -75,7 +85,7 @@ export default function page() {
     const myFamilys = {mem:DBdata?.tr_family}
     const resFamily = await axios.post("/api/member?type=tr&mode=family",myFamilys);
     setFamilyData(resFamily.data);
-    console.log(resFamily.data);
+    // console.log(resFamily.data);
   }
   //관리 회원 삭제
   const deleteMember = async function(id){
@@ -119,12 +129,12 @@ export default function page() {
       if(haveTr){
           const imgUrl = {id:DBdata?.tr_id,img:fr.result}
           const resT = await axios.post("/api/member?type=tr&mode=imgUpdate",imgUrl)
-          console.log(resT.data);
+          // console.log(resT.data);
         }
         else{
           const imgUrl = {id:DBdata?.mb_id,img:fr.result}
           const resM = await axios.post("/api/member?type=mb&mode=imgUpdate",imgUrl)
-          console.log(resM.data);
+          // console.log(resM.data);
         }
     })
     //반영되게 n초후 새로고침
@@ -171,7 +181,7 @@ export default function page() {
             <form onSubmit={changeName}>
               <div className={mypage.bg_top}>
                 <p>이름</p>
-                <input type='text' name='nameInput'maxlength='8'/>
+                <input type='text' name='nameInput'maxLength='8'/>
                 <span>최대 8글자</span>
               </div>
               <input type='submit' value='저장' className={mypage.bg_bot}/>
@@ -193,10 +203,10 @@ export default function page() {
                     }
                   </p>
                   <span>
-                    {/* {
+                    {
                       haveTr?
-                      DBdata?.tr_totalMeal.length : DBdata?.mb_myMeal.length
-                    } */}
+                      mealDBdata?.trMeal_list.length : mealDBdata?.mbMeal_list.length
+                    }
                   </span>
                 </li>
                 <li>
@@ -206,9 +216,9 @@ export default function page() {
                     }
                   </p>
                   <span>
-                    {/* {
-                      haveTr? DBdata?.tr_needJudge.length: DBdata?.mb_like.length
-                    } */}
+                    {
+                      haveTr? mealDBdata?.trMeal_needJudge.length: mealDBdata?.mbMeal_like.length
+                    }
                   </span>
                 </li>
                 {
@@ -220,7 +230,7 @@ export default function page() {
                   : 
                   <li>
                     <p>싫어요</p>
-                    {/* <span>{DBdata?.mb_dislike.length}</span> */}
+                    <span>{mealDBdata?.mbMeal_hate.length}</span>
                   </li>
                 }
               </ul>
@@ -270,11 +280,11 @@ export default function page() {
             <ul>
               <li>
                 <p>총 식단</p>
-                {/* <span>{DBdata?.tr_totalMeal.length}</span> */}
+                <span>{mealDBdata?.trMeal_list.length}</span>
               </li>
               <li>
                 <p>미평가</p>
-                {/* <span>{DBdata?.tr_needJudge.length}</span> */}
+                <span>{mealDBdata?.trMeal_needJudge.length}</span>
               </li>
               <li>
                 <p>회원</p>
@@ -287,7 +297,7 @@ export default function page() {
               { 
                 familyData? 
                 familyData.map((family)=>(
-                <li>
+                <li key={family._id}>
                   <div className={mypage.membership_list_txt}>
                     <figure><img src={family.mb_img} alt='회원이미지'/></figure>
                     <p>{family.mb_name} 님</p>

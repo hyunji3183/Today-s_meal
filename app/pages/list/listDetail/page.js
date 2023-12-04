@@ -17,9 +17,6 @@ export default function page() {
     const closeClick = () => {
         write.current.style = `transform: translateY(230px)`
     }
-    const evaluate = () => {
-        nav.push('/pages/list/trainerEvaluation')
-    }
 
 
     let isTr, isMb, res;
@@ -51,8 +48,17 @@ export default function page() {
         }
         loginCheck();
     }, [])
+    //트레이너 평가페이지 이동
+    const evaluate = () => {
+        isTr = sessionStorage.getItem('tr_id');
+        if(isTr != null){
+            //작성자의 트레이너 코드와 일치해야만 평가 작성가능
+            if(DBdata?.tr_code==DBdata?.tr_code){
+                nav.push('/pages/list/trainerEvaluation')
+            }else{alert('나의 관리회원일 때만 평가할 수 있습니다!')}
+        }else{alert('트레이너만 평가가 가능합니다!')}
+    }
 
-    
     const formatTimeAgo = (dateString) => {
         const start = new Date(dateString);
         const end = new Date();

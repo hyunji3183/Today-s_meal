@@ -29,17 +29,6 @@ async function postDB(type, mode, data) {
         const mealListId = data.dbId;
         result = await toMeal_list.updateOne({ post_user: { $in: mealListId } }).toArray();
     }
-
-  
-
-
-
-
-
-
-
-
-
     return result;
 }
 

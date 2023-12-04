@@ -161,6 +161,16 @@ async function postDB(type,mode,data){
             { "mb_id": whoseName },{ $set:{"mb_name": newName}}
         );
     }
+    //트레이너 식단 db와 연결
+    if(type==='tr' && mode==='getMeal'){
+        const searchId = data.trMeal_id;
+        result = await toMeal_trainerMeal.findOne({trMeal_id: searchId})
+    }
+    //일반회원 식단 db와 연결
+    if(type==='mb' && mode==='getMeal'){
+        const searchId = data.mbMeal_id;
+        result = await toMeal_memberMeal.findOne({mbMeal_id: searchId})
+    }
     //내가 올린 식단(일반멤버)
     if(type==='mb' && mode==='listUpdate'){
         const mealListId = data.dbId;

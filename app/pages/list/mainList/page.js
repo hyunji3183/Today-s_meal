@@ -30,7 +30,6 @@ export default function () {
       if (isMb != null) {//일반회원
         res = await axios.post("/api/member?type=mb&mode=bring", { isMb });
         setDBdata(res.data);
-
         //일반회원-> 내가 작성한 식단 찾아 mb_myMeal에 해당 식단의 id 넣기
         makeMbMealList();
       }
@@ -39,7 +38,6 @@ export default function () {
 
     const getPost = async function () {
       res = await axios.get("/api/list?type=list&mode=getPost");
-
       setPosData(res.data);
       console.log(res.data);
     }
@@ -130,12 +128,6 @@ export default function () {
   };
 
 
-
-
-
-
-
-
   const write = useRef();
   const faceImg = useRef();
   const faceIcons = useRef();
@@ -181,8 +173,8 @@ export default function () {
                 <div className={mainList.con_top_txt1}>
                   <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
                   <div className={mainList.con_top_txt2}>
-                    <p><span>{v.post_title}</span>님의 <span>{v.post_when}</span>식단</p>
-                    <span>방금 전</span>
+                    <p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
+                    <span> 방금 전</span>
                   </div>
                 </div>
                 <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
