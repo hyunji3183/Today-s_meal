@@ -51,8 +51,8 @@ export default function page() {
         }
         loginCheck();
     }, [])
-    // console.log(DBdata);
 
+    
     const formatTimeAgo = (dateString) => {
         const start = new Date(dateString);
         const end = new Date();

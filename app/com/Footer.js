@@ -21,19 +21,15 @@ export default function Footer() {
 
       switch (index) {
         case 0:
-          // nav.push('/pages/list/mainList');
           figure.classList.add(footer.fig1);
           break;
         case 1:
-          // nav.push('/pages/list/mealList');
           figure.classList.add(footer.fig2);
           break;
         case 2:
-          // nav.push('/pages/write/upload');
           figure.classList.add(footer.fig3);
           break;
         case 3:
-          // nav.push('/pages/member/mypage');
           figure.classList.add(footer.fig4);
           break;
         default:
@@ -52,6 +48,7 @@ export default function Footer() {
     }
   }, [footerUl, nav]);
 
+  
   return (
     <footer className={footer.footer_wrap}>
       <ul ref={footerUl}>

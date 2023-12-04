@@ -107,6 +107,22 @@ async function postDB(type, mode, data) {
         result = await toMeal_member.find({ _id: com_user_ID }).toArray();
     }
 
+    if (type == 'list' && mode === 'getPost') {
+        result = await toMeal_list.find().toArray();
+        console.log(result);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     // MongoDB에서 제공하는 ObjectId를 사용하기 위해 import
     const { ObjectId } = require('mongodb');
 
