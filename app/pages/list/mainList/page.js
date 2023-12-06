@@ -42,19 +42,7 @@ export default function () {
       console.log(res.data);
     }
     getPost();
-
-
-    const send_from = async function () {
-      from_data = await axios.post("/api/list?type=com&mode=post_from", from);
-      const from = {
-        from_id: posData._id
-      }
-    }
-    send_from();
   }, [])
-
-
-
   const makeTrMealList = async function () {
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
     const trData = { tr_dbId: res.data._id, myFam: res.data.tr_family };
@@ -118,12 +106,6 @@ export default function () {
     }
   }
 
-
-
-
-
-
-
   const formatTimeAgo = (dateString) => {
     const start = new Date(dateString);
     const end = new Date();
@@ -143,6 +125,20 @@ export default function () {
     return `${start.toLocaleDateString()}`;
   };
 
+  //이미지 base64 코드를 blob으로 짧게 줄이기
+  const base64Blob = function (b64Data, contentType = '') {
+    const image_data = atob(b64Data.split(',')[1]);
+
+    const arraybuffer = new ArrayBuffer(image_data.length);
+    const view = new Uint8Array(arraybuffer);
+
+    for (let i = 0; i < image_data.length; i++) {
+      view[i] = image_data.charCodeAt(i) & 0xff;
+    }
+
+    const blob = new Blob([arraybuffer], { type: contentType });
+    return URL.createObjectURL(blob);
+  }
 
   const write = useRef();
   const faceImg = useRef();
@@ -170,10 +166,13 @@ export default function () {
     }
   }, [faceIcons]);
 
-  const txtPlus = () => {
-    nav.push('/pages/list/listDetail')
+  const txtPlus = (d) => {
+    nav.push({
+      pathname: `/pages/list/listDetail`,
+      state: { id: d._id }
+    })
   }
-
+  
   if (!DBdata) { return <Loading /> }
   return (
     <div className={mainList.mainList_wrap}>
@@ -181,9 +180,8 @@ export default function () {
         <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
         <p>오늘의 식단</p>
       </header>
-      {
-        posData && posData.slice(0).reverse().map((v, k) => {
-          if (v.post_open === 'on') {
+      {posData ?
+        posData.map((v, k) => {
             return (
               <div className={mainList.con} key={k} >
                 <ul>
@@ -199,7 +197,7 @@ export default function () {
                       <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
                     </div>
                     <div className={mainList.con_mid}>
-                      <figure><img src={v.post_img} alt='식단 이미지' /></figure>
+                      <figure><img src={base64Blob(v.post_img)} alt='식단 이미지' /></figure>
                       <div className={mainList.con_mid_txt1}>
                         <div className={mainList.con_mid_txt1s}>
                           <p>트레이너 평가</p>
@@ -209,7 +207,7 @@ export default function () {
                       </div>
                       <div className={mainList.con_mid_txt2}>
                         <p>{v.post_text}</p>
-                        <span onClick={txtPlus}>더보기</span>
+                        <span onClick={() => txtPlus(v)}>더보기</span>
                       </div>
                     </div>
                     <div className={mainList.con_bot}>
@@ -231,7 +229,7 @@ export default function () {
                         </div>
                         <div>
                           <figure><img src='/comment.png' alt='댓글달기' /></figure>
-                          <p onClick={txtPlus}>댓글달기</p>
+                          <p onClick={() => txtPlus(v)}>댓글달기</p>
                         </div>
                       </div>
                       <div className={mainList.con_bot_txt3} ref={faceImg}>
@@ -246,8 +244,7 @@ export default function () {
                 </ul>
               </div>
             )
-          }
-        })
+        }) : <Loading />
       }
       <div className={mainList.write} ref={write}>
         <div className={mainList.write_list}>

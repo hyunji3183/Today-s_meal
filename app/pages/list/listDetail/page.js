@@ -1,13 +1,17 @@
 "use client"
 import axios from 'axios';
 import listDetail from './listDetail.module.scss'
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 
 export default function page() {
     const nav = useRouter();
     const write = useRef();
+    const param = useParams();
+    const id = param.state?.id;
+    console.log(id);
+
     const arrowClick = () => {
         nav.push('/pages/list/mainList')
     }
@@ -51,12 +55,12 @@ export default function page() {
     //트레이너 평가페이지 이동
     const evaluate = () => {
         isTr = sessionStorage.getItem('tr_id');
-        if(isTr != null){
+        if (isTr != null) {
             //작성자의 트레이너 코드와 일치해야만 평가 작성가능
-            if(DBdata?.tr_code==DBdata?.tr_code){
+            if (DBdata?.tr_code == DBdata?.tr_code) {
                 nav.push('/pages/list/trainerEvaluation')
-            }else{alert('나의 관리회원일 때만 평가할 수 있습니다!')}
-        }else{alert('트레이너만 평가가 가능합니다!')}
+            } else { alert('나의 관리회원일 때만 평가할 수 있습니다!') }
+        } else { alert('트레이너만 평가가 가능합니다!') }
     }
 
     const formatTimeAgo = (dateString) => {
@@ -99,7 +103,7 @@ export default function page() {
 
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
         setComData(response.data);
-        
+
         const formattedTime = formatTimeAgo(info.com_date);
         setReview((prevReview) => [...prevReview, { ...info, formattedTime }]);
 
