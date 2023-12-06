@@ -93,7 +93,8 @@ export default function page() {
         const info = {
             com_text: in_txt,
             com_date: Date.now(),
-            com_user: user_id
+            com_user: user_id,
+            // com_from: 
         }
 
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
@@ -106,6 +107,7 @@ export default function page() {
         setGetData(get_data.data)
     }
 
+    console.log(review);
     // const get_pos = await axios.get('/api/list?type=pos&mode=getPos');
     // setPos(get_pos.data)
 

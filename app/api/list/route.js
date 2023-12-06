@@ -112,6 +112,11 @@ async function postDB(type, mode, data) {
         console.log(result);
     }
 
+    if (type === 'list' && mode === 'post_from') {
+        console.log(data);
+        result = true
+    }
+
 
 
 

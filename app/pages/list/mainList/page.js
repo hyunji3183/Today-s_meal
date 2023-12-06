@@ -43,7 +43,17 @@ export default function () {
     }
     getPost();
 
+
+    const send_from = async function () {
+      from_data = await axios.post("/api/list?type=com&mode=post_from", from);
+      const from = {
+        from_id: posData._id
+      }
+    }
+    send_from();
   }, [])
+
+
 
   const makeTrMealList = async function () {
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
@@ -108,6 +118,12 @@ export default function () {
     }
   }
 
+
+
+
+
+
+
   const formatTimeAgo = (dateString) => {
     const start = new Date(dateString);
     const end = new Date();
@@ -165,69 +181,74 @@ export default function () {
         <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
         <p>오늘의 식단</p>
       </header>
-      {posData && posData.slice(0).reverse().map((v, k) => (
-        <div className={mainList.con} key={k}>
-          <ul>
-            <li>
-              <div className={mainList.con_top}>
-                <div className={mainList.con_top_txt1}>
-                  <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
-                  <div className={mainList.con_top_txt2}>
-                    <p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
-                    <span> 방금 전</span>
-                  </div>
-                </div>
-                <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
-              </div>
-              <div className={mainList.con_mid}>
-                <figure><img src={v.post_img} alt='식단 이미지' /></figure>
-                <div className={mainList.con_mid_txt1}>
-                  <div className={mainList.con_mid_txt1s}>
-                    <p>트레이너 평가</p>
-                    <p>[좋아요]</p>
-                  </div>
-                  <span>트레이너 평가전입니다.</span>
-                </div>
-                <div className={mainList.con_mid_txt2}>
-                  <p>{v.post_text}</p>
-                  <span onClick={txtPlus}>더보기</span>
-                </div>
-              </div>
-              <div className={mainList.con_bot}>
-                <div className={mainList.con_bot_txt1}>
-                  <div className={mainList.con_bot_txt1_flex}>
-                    <div>
-                      <figure><img src='/1_1.png' alt='표정이미지' /></figure>
-                      <figure><img src='/2_1.png' alt='표정이미지' /></figure>
-                      <figure><img src='/3_1.png' alt='표정이미지' /></figure>
+      {
+        posData && posData.slice(0).reverse().map((v, k) => {
+          if (v.post_open === 'on') {
+            return (
+              <div className={mainList.con} key={k} >
+                <ul>
+                  <li>
+                    <div className={mainList.con_top}>
+                      <div className={mainList.con_top_txt1}>
+                        <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
+                        <div className={mainList.con_top_txt2}>
+                          <p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
+                          <span> 방금 전</span>
+                        </div>
+                      </div>
+                      <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
                     </div>
-                    <p>김수미님 외 2명</p>
-                  </div>
-                  <span>댓글 0</span>
-                </div>
-                <div className={mainList.con_bot_txt2}>
-                  <div onClick={faceClick}>
-                    <figure><img src='/expression.png' alt='표정짓기' /></figure>
-                    <p>표정짓기</p>
-                  </div>
-                  <div>
-                    <figure><img src='/comment.png' alt='댓글달기' /></figure>
-                    <p onClick={txtPlus}>댓글달기</p>
-                  </div>
-                </div>
-                <div className={mainList.con_bot_txt3} ref={faceImg}>
-                  <ul ref={faceIcons}>
-                    <li><figure></figure></li>
-                    <li><figure></figure></li>
-                    <li><figure></figure></li>
-                  </ul>
-                </div>
+                    <div className={mainList.con_mid}>
+                      <figure><img src={v.post_img} alt='식단 이미지' /></figure>
+                      <div className={mainList.con_mid_txt1}>
+                        <div className={mainList.con_mid_txt1s}>
+                          <p>트레이너 평가</p>
+                          <p>[좋아요]</p>
+                        </div>
+                        <span>트레이너 평가전입니다.</span>
+                      </div>
+                      <div className={mainList.con_mid_txt2}>
+                        <p>{v.post_text}</p>
+                        <span onClick={txtPlus}>더보기</span>
+                      </div>
+                    </div>
+                    <div className={mainList.con_bot}>
+                      <div className={mainList.con_bot_txt1}>
+                        <div className={mainList.con_bot_txt1_flex}>
+                          <div>
+                            <figure><img src='/1_1.png' alt='표정이미지' /></figure>
+                            <figure><img src='/2_1.png' alt='표정이미지' /></figure>
+                            <figure><img src='/3_1.png' alt='표정이미지' /></figure>
+                          </div>
+                          <p>김수미님 외 2명</p>
+                        </div>
+                        <span>댓글 0</span>
+                      </div>
+                      <div className={mainList.con_bot_txt2}>
+                        <div onClick={faceClick}>
+                          <figure><img src='/expression.png' alt='표정짓기' /></figure>
+                          <p>표정짓기</p>
+                        </div>
+                        <div>
+                          <figure><img src='/comment.png' alt='댓글달기' /></figure>
+                          <p onClick={txtPlus}>댓글달기</p>
+                        </div>
+                      </div>
+                      <div className={mainList.con_bot_txt3} ref={faceImg}>
+                        <ul ref={faceIcons}>
+                          <li><figure></figure></li>
+                          <li><figure></figure></li>
+                          <li><figure></figure></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               </div>
-            </li>
-          </ul>
-        </div>
-      ))}
-
+            )
+          }
+        })
+      }
       <div className={mainList.write} ref={write}>
         <div className={mainList.write_list}>
           <button>글 <span>삭제</span>하기</button>
@@ -236,6 +257,6 @@ export default function () {
         <button onClick={closeClick}>닫기</button>
       </div>
       <Footer />
-    </div>
+    </div >
   )
 }
