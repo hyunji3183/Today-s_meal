@@ -70,7 +70,45 @@ export default function page() {
       [name]: value
     }));
   }
+  //이미지 용량 줄이는 함수1
+  const resizeImg = (imageDataURL, maxWidth, maxHeight) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = imageDataURL;
 
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+    });
+  };
+  //이미지 용량 줄이는 함수2
+  const zipImg = (imageDataURL, quality) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = imageDataURL;
+    });
+  };
   //이미지 업로드
   const uploadFile = function (e) {
     e.preventDefault();
@@ -81,6 +119,8 @@ export default function page() {
 
     if (haveTr) {
       fr.addEventListener('load', async function () {
+        const smallerImg = await resizeImg(fr.result, 800, 600);
+        const moreSmallImg = await zipImg(smallerImg, 0.5)
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.tr_name,
@@ -88,7 +128,7 @@ export default function page() {
           post_text: inputData.text,
           post_open: inputData.check,
           post_date: Date.now(),
-          post_img: fr.result,
+          post_img: moreSmallImg,
           post_trainer: DBdata?.tr_code,
           post_trLike: '',
           post_judge: '',
@@ -102,6 +142,8 @@ export default function page() {
     else {
       //DB에 보내주기
       fr.addEventListener('load', async function () {
+        const smallerImg = await resizeImg(fr.result, 800, 600);
+        const moreSmallImg = await zipImg(smallerImg, 0.5)
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.mb_name,
@@ -109,7 +151,7 @@ export default function page() {
           post_text: inputData.text,
           post_open: inputData.check,
           post_date: Date.now(),
-          post_img: fr.result,
+          post_img: moreSmallImg,
           post_trainer: DBdata?.mb_code,
           post_trLike: '',
           post_judge: '',
