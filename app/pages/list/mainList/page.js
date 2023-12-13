@@ -2,16 +2,16 @@
 import Footer from '@/app/com/Footer';
 import Loading from '@/app/com/loading';
 import mainList from './mainList.module.scss'
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export default function () {
 	const [DBdata, setDBdata] = useState();
 	const [haveTr, setHaveTr] = useState(false);
 	const [myListData, setMyListData] = useState();
 	const [posData, setPosData] = useState();
-
+	const [postingTime, setPostingTime] = useState('');
 
 	useEffect(() => {
 		const loginCheck = async function () {
@@ -38,10 +38,37 @@ export default function () {
 
 		const getPost = async function () {
 			const getdata = await axios.get("/api/list?type=list&mode=getPost");
-			setPosData(getdata.data);
+			const reverseData = [...getdata.data].reverse();
+			setPosData(reverseData);
 			console.log(getdata.data);
-		}
+
+
+			const TimeAgo = (dateString) => {
+				const start = new Date(dateString);
+				const end = new Date();
+
+				const seconds = Math.floor((end.getTime() - start.getTime()) / 1000);
+				if (seconds < 60) return '방금 전';
+
+				const minutes = seconds / 60;
+				if (minutes < 60) return `${Math.floor(minutes)}분 전`;
+
+				const hours = minutes / 60;
+				if (hours < 24) return `${Math.floor(hours)}시간 전`;
+
+				const days = hours / 24;
+				if (days < 7) return `${Math.floor(days)}일 전`;
+
+				return `${start.toLocaleDateString()}`;
+			};
+			const TimeArray = reverseData.map((post) => {
+				return TimeAgo(post.post_date);})
+				setPostingTime(TimeArray);
+			
+		};
+
 		getPost();
+
 	}, [])
 
 
@@ -106,24 +133,6 @@ export default function () {
 		}
 	}
 
-	const formatTimeAgo = (dateString) => {
-		const start = new Date(dateString);
-		const end = new Date();
-
-		const seconds = Math.floor((end.getTime() - start.getTime()) / 1000);
-		if (seconds < 60) return '방금 전';
-
-		const minutes = seconds / 60;
-		if (minutes < 60) return `${Math.floor(minutes)}분 전`;
-
-		const hours = minutes / 60;
-		if (hours < 24) return `${Math.floor(hours)}시간 전`;
-
-		const days = hours / 24;
-		if (days < 7) return `${Math.floor(days)}일 전`;
-
-		return `${start.toLocaleDateString()}`;
-	};
 
 	//이미지 base64 코드를 blob으로 짧게 줄이기
 	const base64Blob = function (b64Data, contentType = '') {
@@ -165,14 +174,19 @@ export default function () {
 		}
 	}, [faceIcons]);
 
-	const txtPlus = (d) => {
-		const nav = useRouter();
-		nav.push({
-			pathname: `/pages/list/listDetail`,
-			state: { id: d._id }
-		})
-	}
 
+
+	const router = useRouter();
+
+	const nav = (id) => {
+		const createQuery = (params) => {
+			const queryString = new URLSearchParams(params)
+			return queryString;
+		}
+
+		const queryString = createQuery({ id });
+		router.push(`/pages/list/listDetail?${queryString}`);
+	};
 
 
 	if (!DBdata) { return <Loading /> }
@@ -183,7 +197,7 @@ export default function () {
 				<p>오늘의 식단</p>
 			</header>
 			{posData ?
-				posData.slice(0).reverse().map((v, k) => {
+				posData.map((v, k) => {
 					if (v.post_open === 'on') {
 						return (
 							<div className={mainList.con} key={k} >
@@ -194,13 +208,15 @@ export default function () {
 												<figure><img src='/member_img.png' alt='회원 이미지' /></figure>
 												<div className={mainList.con_top_txt2}>
 													<p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
-													<span> 방금 전</span>
+													<span> {postingTime[k]}</span>
 												</div>
 											</div>
 											<figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
-											<figure><img src={base64Blob(v.post_img)} alt='식단 이미지' /></figure>
+											<figure onClick={() => { nav(v._id) }}>
+												<img src={base64Blob(v.post_img)} alt='식단 이미지' />
+											</figure>
 											<div className={mainList.con_mid_txt1}>
 												<div className={mainList.con_mid_txt1s}>
 													<p>트레이너 평가</p>
@@ -210,7 +226,7 @@ export default function () {
 											</div>
 											<div className={mainList.con_mid_txt2}>
 												<p>{v.post_text}</p>
-												<span onClick={() => txtPlus(v)}>더보기</span>
+												<span onClick={() => { nav(v._id) }}>더보기</span>
 											</div>
 										</div>
 										<div className={mainList.con_bot}>
@@ -232,7 +248,7 @@ export default function () {
 												</div>
 												<div>
 													<figure><img src='/comment.png' alt='댓글달기' /></figure>
-													<p onClick={() => txtPlus(v)}>댓글달기</p>
+													<p onClick={() => { nav(v._id) }}>댓글달기</p>
 												</div>
 											</div>
 											<div className={mainList.con_bot_txt3} ref={faceImg}>

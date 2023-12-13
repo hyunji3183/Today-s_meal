@@ -108,12 +108,11 @@ async function postDB(type, mode, data) {
     }
 
     if (type == 'list' && mode === 'getPost') {
-        const result = await toMeal_list.find().toArray();
+        const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
         console.log(result);
     }
 
     if (type === 'com' && mode === 'post_from') {
-        console.log(data);
         result = true
     }
 

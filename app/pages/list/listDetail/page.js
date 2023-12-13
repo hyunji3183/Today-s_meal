@@ -1,16 +1,13 @@
 "use client"
 import axios from 'axios';
 import listDetail from './listDetail.module.scss'
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import {useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 
 export default function page() {
     const nav = useRouter();
     const write = useRef();
-    const param = useParams();
-    const id = param.state?.id;
-    console.log(id);
 
     const arrowClick = () => {
         nav.push('/pages/list/mainList')
@@ -23,7 +20,7 @@ export default function page() {
     }
 
 
-    let isTr, isMb, res;
+    let res;
     const [DBdata, setDBdata] = useState();
     const [UsName, setUsName] = useState();
     const [TrName, setTrName] = useState();
@@ -31,8 +28,8 @@ export default function page() {
     const [TrImg, setTrImg] = useState();
     useEffect(() => {
         //세션값으로 로그인 db정보 찾아 가져오기
-        isTr = sessionStorage.getItem('tr_id');
-        isMb = sessionStorage.getItem('mb_id');
+        const isTr = sessionStorage.getItem('tr_id');
+        const isMb = sessionStorage.getItem('mb_id');
 
         const loginCheck = async function () {
             if (isTr != null) {//트레이너
@@ -52,9 +49,10 @@ export default function page() {
         }
         loginCheck();
     }, [])
+
     //트레이너 평가페이지 이동
     const evaluate = () => {
-        isTr = sessionStorage.getItem('tr_id');
+         const isTr = sessionStorage.getItem('tr_id');
         if (isTr != null) {
             //작성자의 트레이너 코드와 일치해야만 평가 작성가능
             if (DBdata?.tr_code == DBdata?.tr_code) {
@@ -104,17 +102,20 @@ export default function page() {
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
         setComData(response.data);
 
-        const formattedTime = formatTimeAgo(info.com_date);
-        setReview((prevReview) => [...prevReview, { ...info, formattedTime }]);
+        const writeTime = formatTimeAgo(info.com_date);
+        setReview((prevReview) => [...prevReview, { ...info, writeTime }]);
 
         const get_data = await axios.get('/api/list?type=com&mode=getData', info);
         setGetData(get_data.data)
     }
 
-    console.log(review);
     // const get_pos = await axios.get('/api/list?type=pos&mode=getPos');
     // setPos(get_pos.data)
 
+
+    const data = useSearchParams();
+    const postid = data.get('id');
+    console.log(postid);
 
     return (
         <div className={listDetail.listDetail_wrap}>
