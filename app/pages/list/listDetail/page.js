@@ -1,7 +1,7 @@
 "use client"
 import axios from 'axios';
 import listDetail from './listDetail.module.scss'
-import {useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 
@@ -48,17 +48,31 @@ export default function page() {
             }
         }
         loginCheck();
+        get_Post();
     }, [])
 
     //트레이너 평가페이지 이동
-    const evaluate = () => {
-         const isTr = sessionStorage.getItem('tr_id');
+    const router = useRouter();
+    const evaluate = (id) => {
+
+        const createQuery = (params) => {
+            const queryString = new URLSearchParams(params)
+            return queryString;
+        }
+
+        const queryString = createQuery({ id });
+
+        const isTr = sessionStorage.getItem('tr_id');
         if (isTr != null) {
             //작성자의 트레이너 코드와 일치해야만 평가 작성가능
             if (DBdata?.tr_code == DBdata?.tr_code) {
-                nav.push('/pages/list/trainerEvaluation')
-            } else { alert('나의 관리회원일 때만 평가할 수 있습니다!') }
-        } else { alert('트레이너만 평가가 가능합니다!') }
+                router.push(`/pages/list/trainerEvaluation?${queryString}`);
+            } else {
+                alert('나의 관리회원일 때만 평가할 수 있습니다!')
+            }
+        } else {
+            alert('트레이너만 평가가 가능합니다!')
+        }
     }
 
     const formatTimeAgo = (dateString) => {
@@ -87,6 +101,17 @@ export default function page() {
     const [getData, setGetData] = useState();
     const [pos, setPos] = useState();
 
+    const data = useSearchParams();
+    const postId = data.get('id');
+
+    //게시글 디테일 출력
+    const get_Post = async function () {
+        const idData = { id: postId }
+        console.log(idData);
+        const get_pos = await axios.post('/api/list?type=pos&mode=getDetailPost', { id: postId });
+        setPos(get_pos.data);
+    }
+    //댓글내용저장
     const save_comment = async (e) => {
         e.preventDefault();
         const in_txt = e.target.text.value
@@ -96,9 +121,8 @@ export default function page() {
             com_text: in_txt,
             com_date: Date.now(),
             com_user: user_id,
-            // com_from: 
+            com_from: postId
         }
-
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
         setComData(response.data);
 
@@ -108,14 +132,9 @@ export default function page() {
         const get_data = await axios.get('/api/list?type=com&mode=getData', info);
         setGetData(get_data.data)
     }
+    //해당 게시글에 등록된 댓글 가져오기
+    const get_comment = async () => { }
 
-    // const get_pos = await axios.get('/api/list?type=pos&mode=getPos');
-    // setPos(get_pos.data)
-
-
-    const data = useSearchParams();
-    const postid = data.get('id');
-    console.log(postid);
 
     return (
         <div className={listDetail.listDetail_wrap}>
@@ -124,31 +143,31 @@ export default function page() {
                 <p>게시글 상세</p>
                 <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
             </header>
-
-            <div className={listDetail.con}>
-                <div className={listDetail.con_top}>
-                    <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
-                    <div className={listDetail.con_top_txt}>
-                        <p><span>정우성</span>님의 식단</p>
-                        <span>방금 전</span>
+            {pos && pos.map((item, key) => (
+                <div className={listDetail.con} key={key}>
+                    <div className={listDetail.con_top}>
+                        <figure><img src={item.post_userImg} alt='회원 이미지' /></figure>
+                        <div className={listDetail.con_top_txt}>
+                            <p><span>{item.post_title}</span>님의 <span>{item.post_when}</span>식단</p>
+                            <span>방금 전</span>
+                        </div>
+                    </div>
+                    <div className={listDetail.con_mid}>
+                        <figure><img src={item.post_img} alt='식단 이미지' /></figure>
+                        <p>{item.post_text}</p>
+                    </div>
+                    <div className={listDetail.con_bot}>
+                        <div className={listDetail.con_bot_txt}>
+                            <p>트레이너 평가</p>
+                            <p>[좋아요]</p>
+                        </div>
+                        <div className={listDetail.con_bot_txt2}>
+                            <span>트레이너 평가전입니다.</span>
+                            <span onClick={() => { evaluate(postId) }}>평가하기</span>
+                        </div>
                     </div>
                 </div>
-                <div className={listDetail.con_mid}>
-                    <figure><img src='/food_img.png' alt='식단 이미지' /></figure>
-                    <p>오늘 저녁식단입니다.<br /> 간단하게 양송이를 넣은 샐러드를 만들어보았어요.</p>
-                </div>
-                <div className={listDetail.con_bot}>
-                    <div className={listDetail.con_bot_txt}>
-                        <p>트레이너 평가</p>
-                        <p>[좋아요]</p>
-                    </div>
-                    <div className={listDetail.con_bot_txt2}>
-                        <span>트레이너 평가전입니다.</span>
-                        <span onClick={evaluate}>평가하기</span>
-                    </div>
-                </div>
-            </div>
-
+            ))}
             <div className={listDetail.comment}>
                 <p>댓글 {review.length}</p>
                 <ul>

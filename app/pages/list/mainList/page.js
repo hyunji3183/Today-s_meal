@@ -37,7 +37,7 @@ export default function () {
 		loginCheck();
 
 		const getPost = async function () {
-			const getdata = await axios.get("/api/list?type=list&mode=getPost");
+			const getdata = await axios.get("/api/list?type=list&mode=getAllPost");
 			const reverseData = [...getdata.data].reverse();
 			setPosData(reverseData);
 			console.log(getdata.data);
@@ -205,7 +205,7 @@ export default function () {
 									<li>
 										<div className={mainList.con_top}>
 											<div className={mainList.con_top_txt1}>
-												<figure><img src='/member_img.png' alt='회원 이미지' /></figure>
+												<figure><img src={v.post_userImg} alt='회원 이미지' /></figure>
 												<div className={mainList.con_top_txt2}>
 													<p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
 													<span> {postingTime[k]}</span>

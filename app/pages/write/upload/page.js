@@ -124,6 +124,7 @@ export default function page() {
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.tr_name,
+          post_userImg : DBdata?.tr_img,
           post_when: inputData.time,
           post_text: inputData.text,
           post_open: inputData.check,
@@ -147,6 +148,7 @@ export default function page() {
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.mb_name,
+          post_userImg : DBdata?.mb_img,
           post_when: inputData.time,
           post_text: inputData.text,
           post_open: inputData.check,

@@ -96,6 +96,21 @@ async function postDB(type, mode, data) {
         // result = await toMeal_list.find({post_user:{$in:mealListId}}).toArray();
     }
 
+    //트레이너가 식단 평가하기
+    if (type === 'list' && mode === 'judge') {
+        const postid = data.postid;
+        const likeHate = data.post_trLike;
+        const judge = data.post_judge;
+
+        const { ObjectId } = require('mongodb');
+        const findListId = new ObjectId(postid);
+
+        result = await toMeal_list.updateOne(//좋아요,싫어요 (0이면 좋아요/1이면 싫어요)
+            { _id: findListId }, { $set: { "post_trLike": likeHate, "post_judge": judge } }
+        );
+        console.log(result);
+    }
+
     //댓글내용저장
     if (type === 'com' && mode === 'commentUpdate') {
         result = await toMeal_comment.insertOne(data);
@@ -106,12 +121,19 @@ async function postDB(type, mode, data) {
         const com_user_ID = data.com_user;
         result = await toMeal_member.find({ _id: com_user_ID }).toArray();
     }
-
-    if (type == 'list' && mode === 'getPost') {
+    //메인리스트출력
+    if (type == 'list' && mode === 'getAllPost') {
         const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
-        console.log(result);
     }
-
+    //게시글 디테일 출력
+    if (type === 'pos' && mode === 'getDetailPost') {
+        const post_ID = data.id;
+        // MongoDB에서 제공하는 ObjectId를 사용하려면 선언해줘야함
+        const { ObjectId } = require('mongodb');
+        const objectId = new ObjectId(post_ID);
+        result = await toMeal_list.find({ _id: objectId }).toArray();
+    }
+    //해당 게시글에 등록된 댓글 가져오기
     if (type === 'com' && mode === 'post_from') {
         result = true
     }
@@ -119,25 +141,6 @@ async function postDB(type, mode, data) {
 
 
 
-
-
-
-
-
-
-
-
-    // MongoDB에서 제공하는 ObjectId를 사용하기 위해 import
-    const { ObjectId } = require('mongodb');
-
-    // if (type === 'pos' && mode === 'getPos') {
-    //     const objectId = new ObjectId(_id); // _id를 ObjectId로 변환
-    //     console.log(objectId);
-    //     console.log('sd2fs1a23f1s3');
-    //     console.log(_id);
-
-    //     result = await toMeal_list.find({ _id: objectId }).toArray();
-    // }
 
     return result;
 }
