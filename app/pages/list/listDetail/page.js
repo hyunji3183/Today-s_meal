@@ -23,10 +23,12 @@ export default function page() {
 
     let res;
     const [DBdata, setDBdata] = useState();
+    const [haveTr, setHaveTr] = useState(false);
     const [UsName, setUsName] = useState();
     const [TrName, setTrName] = useState();
     const [UsImg, setUsImg] = useState();
     const [TrImg, setTrImg] = useState();
+
     useEffect(() => {
         //세션값으로 로그인 db정보 찾아 가져오기
         const isTr = sessionStorage.getItem('tr_id');
@@ -36,7 +38,7 @@ export default function page() {
             if (isTr != null) {//트레이너
                 res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
                 setDBdata(res.data);
-                // setHaveTr(true);
+                setHaveTr(true);
                 setTrName(res.data.tr_name)
                 setTrImg(res.data.tr_img)
             }
@@ -50,7 +52,6 @@ export default function page() {
         }
         loginCheck();
         get_Post();
-        get_review();
     }, [])
 
     //트레이너 평가페이지 이동
@@ -78,6 +79,11 @@ export default function page() {
         }
     }
 
+
+    const [comData, setComData] = useState();
+    const [pos, setPos] = useState();
+    const [com, setCom] = useState();
+
     const formatTimeAgo = (dateString) => {
         const start = new Date(dateString);
         const end = new Date();
@@ -97,11 +103,6 @@ export default function page() {
         return `${start.toLocaleDateString()}`;
     };
 
-    const [comData, setComData] = useState();
-    const [review, setReview] = useState([]);
-    const [getData, setGetData] = useState();
-    const [pos, setPos] = useState();
-    const [com, setCom] = useState();
 
     const data = useSearchParams();
     const postId = data.get('id');
@@ -109,40 +110,56 @@ export default function page() {
     //게시글 디테일 출력
     const get_Post = async function () {
         const get_pos = await axios.post('/api/list?type=pos&mode=getDetailPost', { id: postId });
-        setPos(get_pos.data);
-    }
+        const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date)}));
+        setPos(posData);
 
+        const get_review = async () => {
+            const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
+            const commentData = AllComment.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.com_date) }));
+            setCom(commentData)
+
+            // const user_data = commentData.map(item => item.com_user);
+
+            // const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
+            // setMemData(getComUser.data.checkMem)
+            // setTrData(getComUser.data.checkTr)
+            // console.log(getComUser.data.checkMem);
+            // console.log(getComUser.data.checkTr)
+        }
+        get_review();
+    }
+    console.log(pos);
     //댓글내용저장
     const save_comment = async (e) => {
         e.preventDefault();
         const user_id = DBdata?._id;
         const in_txt = e.target.text.value
-
-        const info = {
-            com_text: in_txt,
-            com_date: Date.now(),
-            com_user: user_id,
-            com_from: postId
+        if (haveTr) {
+            const info = {
+                com_text: in_txt,
+                com_date: Date.now(),
+                com_user: user_id,
+                com_from: postId,
+                com_userImg: DBdata?.tr_img,
+                com_userName: DBdata?.tr_name
+            }
+            const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
+            setComData(response.data);
         }
-        const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
-        setComData(response.data);
+        else {
+            const info = {
+                com_text: in_txt,
+                com_date: Date.now(),
+                com_user: user_id,
+                com_from: postId,
+                com_userImg: DBdata?.mb_img,
+                com_userName: DBdata?.mb_name
+            }
+            const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
+            setComData(response.data);
+        }
     }
 
-    const get_review = async () => {
-        const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
-        const commentData = AllComment.data;
-        setCom(commentData)
-
-        const user_data = commentData.map(item => item.com_user);
-
-        const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
-        const userData = getComUser.data
-        setGetData(userData)
-
-        // if (userData.checkMem[0]._id == user_data || userData.checkTr[0]._id == user_data) {
-        //     console.log(true);
-        // };
-    }
 
     return (
         <div className={listDetail.listDetail_wrap}>
@@ -157,7 +174,7 @@ export default function page() {
                         <figure><img src={item.post_userImg} alt='회원 이미지' /></figure>
                         <div className={listDetail.con_top_txt}>
                             <p><span>{item.post_title}</span>님의 <span>{item.post_when}</span>식단</p>
-                            <span>방금 전</span>
+                            <span>{item.formattedDate}</span>
                         </div>
                     </div>
                     <div className={listDetail.con_mid}>
@@ -197,10 +214,10 @@ export default function page() {
                     ) : (
                         com && com.map((item, key) => (
                             <li key={key}>
-                                <figure><img src={UsImg ? UsImg : TrImg} alt='회원 이미지' /></figure>
+                                <figure><img src={item.com_userImg} alt='회원 이미지' /></figure>
                                 <div className={listDetail.comment_txt1}>
-                                    <p>{UsName ? UsName : TrName}</p>
-                                    <span>방금 전</span>
+                                    <p>{item.com_userName}</p>
+                                    <span>{item.formattedDate}</span>
                                     <p>{item.com_text}</p>
                                     <div className={listDetail.comment_txt2}>
                                         <div>

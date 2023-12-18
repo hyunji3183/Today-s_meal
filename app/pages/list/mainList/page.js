@@ -188,7 +188,9 @@ export default function () {
 		router.push(`/pages/list/listDetail?${queryString}`);
 	};
 
-
+	const likeClick = ()=>{
+		router.push('/pages/list/evaluationList');
+	}
 	if (!DBdata) { return <Loading /> }
 	return (
 		<div className={mainList.mainList_wrap}>
@@ -237,7 +239,7 @@ export default function () {
 														<figure><img src='/2_1.png' alt='표정이미지' /></figure>
 														<figure><img src='/3_1.png' alt='표정이미지' /></figure>
 													</div>
-													<p>김수미님 외 2명</p>
+													<p onClick={likeClick}>김수미님 외 2명</p>
 												</div>
 												<span>댓글 0</span>
 											</div>

@@ -139,17 +139,17 @@ async function postDB(type, mode, data) {
 
 
     //댓글 작성자 프로필 가져오기
-    if (type === 'com' && mode === 'getComData') {
-        const userArray = data.user;
-        const { ObjectId } = require('mongodb');
-        const com_user_ID = userArray.map(id => new ObjectId(id));
-        const checkMem = await toMeal_member.find({ _id: { $in: com_user_ID } }).toArray();
-        const checkTr = await toMeal_trainer.find({ _id: { $in: com_user_ID } }).toArray();
-        result = {
-            checkMem: checkMem,
-            checkTr: checkTr
-        };
-    }
+    // if (type === 'com' && mode === 'getComData') {
+    //     const userArray = data.user;
+    //     const { ObjectId } = require('mongodb');
+    //     const com_user_ID = userArray.map(id => new ObjectId(id));
+    //     const checkMem = await toMeal_member.find({ _id: { $in: com_user_ID } }).toArray();
+    //     const checkTr = await toMeal_trainer.find({ _id: { $in: com_user_ID } }).toArray();
+    //     result = {
+    //         checkMem: checkMem,
+    //         checkTr: checkTr
+    //     };
+    // }
 
 
 
