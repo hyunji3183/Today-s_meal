@@ -52,6 +52,7 @@ export default function page() {
         }
         loginCheck();
         get_Post();
+        get_review();
     }, [])
 
     //트레이너 평가페이지 이동
@@ -110,25 +111,25 @@ export default function page() {
     //게시글 디테일 출력
     const get_Post = async function () {
         const get_pos = await axios.post('/api/list?type=pos&mode=getDetailPost', { id: postId });
-        const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date)}));
+        const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date) }));
         setPos(posData);
-
-        const get_review = async () => {
-            const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
-            const commentData = AllComment.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.com_date) }));
-            setCom(commentData)
-
-            // const user_data = commentData.map(item => item.com_user);
-
-            // const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
-            // setMemData(getComUser.data.checkMem)
-            // setTrData(getComUser.data.checkTr)
-            // console.log(getComUser.data.checkMem);
-            // console.log(getComUser.data.checkTr)
-        }
-        get_review();
     }
-    console.log(pos);
+
+
+    const get_review = async () => {
+        const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
+        const commentData = AllComment.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.com_date) }));
+        setCom(commentData)
+        // const user_data = commentData.map(item => item.com_user);
+
+        // const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
+        // setMemData(getComUser.data.checkMem)
+        // setTrData(getComUser.data.checkTr)
+        // console.log(getComUser.data.checkMem);
+        // console.log(getComUser.data.checkTr)
+    }
+
+
     //댓글내용저장
     const save_comment = async (e) => {
         e.preventDefault();
