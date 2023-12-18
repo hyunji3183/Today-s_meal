@@ -3,6 +3,7 @@ import axios from 'axios';
 import listDetail from './listDetail.module.scss'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { info } from 'sass';
 
 
 export default function page() {
@@ -49,26 +50,28 @@ export default function page() {
         }
         loginCheck();
         get_Post();
+        get_review();
     }, [])
 
     //트레이너 평가페이지 이동
     const router = useRouter();
     const evaluate = (id) => {
-
+        //url받아오기
         const createQuery = (params) => {
             const queryString = new URLSearchParams(params)
             return queryString;
         }
-
         const queryString = createQuery({ id });
 
         const isTr = sessionStorage.getItem('tr_id');
+        const postTrcode = pos[0].post_trainer;
+
         if (isTr != null) {
             //작성자의 트레이너 코드와 일치해야만 평가 작성가능
-            if (DBdata?.tr_code == DBdata?.tr_code) {
+            if (DBdata?.tr_code == postTrcode) {
                 router.push(`/pages/list/trainerEvaluation?${queryString}`);
             } else {
-                alert('나의 관리회원일 때만 평가할 수 있습니다!')
+                alert('나의 관리회원만 평가할 수 있습니다!')
             }
         } else {
             alert('트레이너만 평가가 가능합니다!')
@@ -94,28 +97,26 @@ export default function page() {
         return `${start.toLocaleDateString()}`;
     };
 
-
-
     const [comData, setComData] = useState();
     const [review, setReview] = useState([]);
     const [getData, setGetData] = useState();
     const [pos, setPos] = useState();
+    const [com, setCom] = useState();
 
     const data = useSearchParams();
     const postId = data.get('id');
 
     //게시글 디테일 출력
     const get_Post = async function () {
-        const idData = { id: postId }
-        console.log(idData);
         const get_pos = await axios.post('/api/list?type=pos&mode=getDetailPost', { id: postId });
         setPos(get_pos.data);
     }
+
     //댓글내용저장
     const save_comment = async (e) => {
         e.preventDefault();
-        const in_txt = e.target.text.value
         const user_id = DBdata?._id;
+        const in_txt = e.target.text.value
 
         const info = {
             com_text: in_txt,
@@ -125,16 +126,23 @@ export default function page() {
         }
         const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
         setComData(response.data);
-
-        const writeTime = formatTimeAgo(info.com_date);
-        setReview((prevReview) => [...prevReview, { ...info, writeTime }]);
-
-        const get_data = await axios.get('/api/list?type=com&mode=getData', info);
-        setGetData(get_data.data)
     }
-    //해당 게시글에 등록된 댓글 가져오기
-    const get_comment = async () => { }
 
+    const get_review = async () => {
+        const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
+        const commentData = AllComment.data;
+        setCom(commentData)
+
+        const user_data = commentData.map(item => item.com_user);
+
+        const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
+        const userData = getComUser.data
+        setGetData(userData)
+
+        // if (userData.checkMem[0]._id == user_data || userData.checkTr[0]._id == user_data) {
+        //     console.log(true);
+        // };
+    }
 
     return (
         <div className={listDetail.listDetail_wrap}>
@@ -159,24 +167,35 @@ export default function page() {
                     <div className={listDetail.con_bot}>
                         <div className={listDetail.con_bot_txt}>
                             <p>트레이너 평가</p>
-                            <p>[좋아요]</p>
+                            {
+                                item.post_trLike == '' ? <></>
+                                    :
+                                    <p>{item.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
+                            }
                         </div>
-                        <div className={listDetail.con_bot_txt2}>
-                            <span>트레이너 평가전입니다.</span>
-                            <span onClick={() => { evaluate(postId) }}>평가하기</span>
-                        </div>
+                        {
+                            item.post_judge == '' ?
+                                <div className={listDetail.con_bot_txt2}>
+                                    <span>트레이너 평가전입니다.</span>
+                                    <span onClick={() => { evaluate(postId) }}>평가하기</span>
+                                </div>
+                                :
+                                <div className={listDetail.con_bot_txt2}>
+                                    <span>{item.post_judge}</span>
+                                </div>
+                        }
                     </div>
                 </div>
             ))}
             <div className={listDetail.comment}>
-                <p>댓글 {review.length}</p>
+                <p>댓글 {com?.length}</p>
                 <ul>
-                    {review?.length <= 0 ? (
+                    {com?.length <= 0 ? (
                         <li>
                             <p>작성된 댓글이 없습니다.</p>
                         </li>
                     ) : (
-                        review.map((item, key) => (
+                        com && com.map((item, key) => (
                             <li key={key}>
                                 <figure><img src={UsImg ? UsImg : TrImg} alt='회원 이미지' /></figure>
                                 <div className={listDetail.comment_txt1}>
@@ -184,7 +203,10 @@ export default function page() {
                                     <span>방금 전</span>
                                     <p>{item.com_text}</p>
                                     <div className={listDetail.comment_txt2}>
-                                        <span>좋아요</span>
+                                        <div>
+                                            <span>좋아요</span>
+                                            <span>5</span>
+                                        </div>
                                         <span>답글쓰기</span>
                                     </div>
                                 </div>

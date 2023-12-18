@@ -105,10 +105,11 @@ async function postDB(type, mode, data) {
         const { ObjectId } = require('mongodb');
         const findListId = new ObjectId(postid);
 
-        result = await toMeal_list.updateOne(//좋아요,싫어요 (0이면 좋아요/1이면 싫어요)
+        await toMeal_list.updateOne(//좋아요,싫어요 (0이면 좋아요/1이면 싫어요)
             { _id: findListId }, { $set: { "post_trLike": likeHate, "post_judge": judge } }
         );
-        console.log(result);
+        // result = await toMeal_list.find({ _id: findListId }).toArray();
+        result = true;
     }
 
     //댓글내용저장
@@ -116,15 +117,11 @@ async function postDB(type, mode, data) {
         result = await toMeal_comment.insertOne(data);
     }
 
-    //댓글 작성자 고유번호 가져오기
-    if (type === 'com' && mode === 'getData') {
-        const com_user_ID = data.com_user;
-        result = await toMeal_member.find({ _id: com_user_ID }).toArray();
-    }
     //메인리스트출력
     if (type == 'list' && mode === 'getAllPost') {
         const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
     }
+
     //게시글 디테일 출력
     if (type === 'pos' && mode === 'getDetailPost') {
         const post_ID = data.id;
@@ -133,11 +130,26 @@ async function postDB(type, mode, data) {
         const objectId = new ObjectId(post_ID);
         result = await toMeal_list.find({ _id: objectId }).toArray();
     }
+
     //해당 게시글에 등록된 댓글 가져오기
     if (type === 'com' && mode === 'post_from') {
-        result = true
+        const post_ID = data.id;
+        result = await toMeal_comment.find({ com_from: post_ID }).toArray();
     }
 
+
+    //댓글 작성자 프로필 가져오기
+    if (type === 'com' && mode === 'getComData') {
+        const userArray = data.user;
+        const { ObjectId } = require('mongodb');
+        const com_user_ID = userArray.map(id => new ObjectId(id));
+        const checkMem = await toMeal_member.find({ _id: { $in: com_user_ID } }).toArray();
+        const checkTr = await toMeal_trainer.find({ _id: { $in: com_user_ID } }).toArray();
+        result = {
+            checkMem: checkMem,
+            checkTr: checkTr
+        };
+    }
 
 
 

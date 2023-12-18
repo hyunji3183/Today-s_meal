@@ -41,7 +41,7 @@ export default function page() {
   let insertData = {
     post_trLike: likeHate,
     post_judge: formData.judge,
-    postid:postid
+    postid: postid
   }
 
   //평가 등록하기
@@ -52,8 +52,9 @@ export default function page() {
       return;
     }
     console.log(insertData);
-    let res = await axios.post("/api/list?type=list&mode=judge",insertData)
-      // console.log(res.data);
+    let res = await axios.post("/api/list?type=list&mode=judge", insertData)
+    //등록시 id일치하는 원글로 돌려보내기
+    nav.push(`/pages/list/listDetail?id=${postid}`);
   }
   return (
     <div className={trainerEvaluation.trainer_evaluate} ref={trainer_evaluate}>
