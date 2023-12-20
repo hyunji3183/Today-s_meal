@@ -9,6 +9,8 @@ import { info } from 'sass';
 export default function page() {
     const nav = useRouter();
     const write = useRef();
+    const newCom = useRef();
+    const comment = useRef();
 
     const arrowClick = () => {
         nav.push('/pages/list/mainList')
@@ -19,9 +21,8 @@ export default function page() {
     const closeClick = () => {
         write.current.style = `transform: translateY(230px)`
     }
+    
 
-
-    let res;
     const [DBdata, setDBdata] = useState();
     const [haveTr, setHaveTr] = useState(false);
     const [UsName, setUsName] = useState();
@@ -36,14 +37,14 @@ export default function page() {
 
         const loginCheck = async function () {
             if (isTr != null) {//트레이너
-                res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
+                const res = await axios.post("/api/member?type=tr&mode=bring", { isTr });
                 setDBdata(res.data);
                 setHaveTr(true);
                 setTrName(res.data.tr_name)
                 setTrImg(res.data.tr_img)
             }
             if (isMb != null) {//일반회원
-                res = await axios.post("/api/member?type=mb&mode=bring", { isMb });
+                const res = await axios.post("/api/member?type=mb&mode=bring", { isMb });
                 setDBdata(res.data);
                 setUsName(res.data.mb_name)
                 setUsImg(res.data.mb_img)
@@ -84,6 +85,7 @@ export default function page() {
     const [comData, setComData] = useState();
     const [pos, setPos] = useState();
     const [com, setCom] = useState();
+    const [selectItem,setSelectItem] = useState(null);
 
     const formatTimeAgo = (dateString) => {
         const start = new Date(dateString);
@@ -114,7 +116,6 @@ export default function page() {
         const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date) }));
         setPos(posData);
     }
-
 
     const get_review = async () => {
         const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
@@ -159,9 +160,19 @@ export default function page() {
             const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
             setComData(response.data);
         }
+        e.target.text.value='';
+    }
+    const save_newComment = async (e) => {
+        e.preventDefault();
+        console.log('hi');
+        newCom.current.style = `display: none;`
+        comment.current.style = `display: flex;`
     }
 
-
+    const writeNewCommnent = (Id) => {
+        newCom.current.style = `display: block;`
+        setSelectItem(Id)
+    }
     return (
         <div className={listDetail.listDetail_wrap}>
             <header>
@@ -186,7 +197,8 @@ export default function page() {
                         <div className={listDetail.con_bot_txt}>
                             <p>트레이너 평가</p>
                             {
-                                item.post_trLike == '' ? <></>
+                                item.post_trLike === "" ?
+                                <p>[미평가]</p>
                                     :
                                     <p>{item.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
                             }
@@ -225,35 +237,33 @@ export default function page() {
                                             <span>좋아요</span>
                                             <span>5</span>
                                         </div>
-                                        <span>답글쓰기</span>
+                                        <span onClick={()=>writeNewCommnent(item.id)}>답글쓰기</span>
+                                    </div>
+                                    <div className={listDetail.comment_one} ref={comment}>
+                                        <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
+                                        <div className={listDetail.comment_txt1}>
+                                            <p>정우성</p>
+                                            <span>방금 전</span>
+                                            <p>샐러드 레시피 공유해주세요.</p>
+                                            <div className={listDetail.comment_txt2}>
+                                                <span>좋아요</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={listDetail.newComment_box} ref = {newCom}>
+                                        <form className={listDetail.newComment} onSubmit={save_newComment}>
+                                            <label htmlFor='text'>
+                                                <textarea type='text' name='text' placeholder='김수미 님에게 답글 남기는 중' />
+                                            </label>
+                                            <label htmlFor='submit'>
+                                                <input type='submit' name='submit'value='등록' />
+                                            </label>
+                                        </form>
                                     </div>
                                 </div>
                             </li>
                         ))
                     )}
-                    <li>
-                        <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
-                        <div className={listDetail.comment_txt1}>
-                            <p>정우성</p>
-                            <span>방금 전</span>
-                            <p>샐러드 레시피 공유해주세요.</p>
-                            <div className={listDetail.comment_txt2}>
-                                <span>좋아요</span>
-                                <span>답글쓰기</span>
-                            </div>
-                            <div className={listDetail.comment_one}>
-                                <figure><img src='/member_img.png' alt='회원 이미지' /></figure>
-                                <div className={listDetail.comment_txt1}>
-                                    <p>정우성</p>
-                                    <span>방금 전</span>
-                                    <p>샐러드 레시피 공유해주세요.</p>
-                                    <div className={listDetail.comment_txt2}>
-                                        <span>좋아요</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
                 </ul>
             </div>
 
