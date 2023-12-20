@@ -87,14 +87,6 @@ async function postDB(type, mode, data) {
         );
         result = await toMeal_trainerMeal.find({ "trMeal_id": whoseList }).toArray();
     }
-    //mealList 페이지
-    //내가 올린 식단만 보기(일반멤버)
-    //멤버의 고유id를 받아서, 자신의 식단 고유id들을 반환
-    if (type === 'mb' && mode === 'listGet') {
-        const mealListId = [data.dbId];
-        // console.log(mealListId);
-        // result = await toMeal_list.find({post_user:{$in:mealListId}}).toArray();
-    }
 
     //트레이너가 식단 평가하기
     if (type === 'list' && mode === 'judge') {
@@ -121,7 +113,25 @@ async function postDB(type, mode, data) {
     if (type == 'list' && mode === 'getAllPost') {
         const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
     }
+//mealList 페이지 출력
+    if (type == 'list' && mode === 'getMealPost') {
+        const userTrID = data.trid;
+        const userMbID = data.mbid;
 
+        if(userTrID != null){//트레이너
+            const findUser = await toMeal_trainer.find({ tr_id : userTrID }).toArray();
+            const userCode = findUser[0].tr_code;
+            const famPost = await toMeal_list.find({ post_trainer: userCode }).toArray();
+            result = famPost;
+        }
+        if(userMbID != null){//일반회원
+            const findUser = await toMeal_member.find({ mb_id : userMbID}).toArray();
+            const user_id = findUser[0]._id;
+            const mbPost = await toMeal_list.find({ post_user: user_id.toString()}).toArray();
+            result = mbPost;
+        }
+
+    }
     //게시글 디테일 출력
     if (type === 'pos' && mode === 'getDetailPost') {
         const post_ID = data.id;

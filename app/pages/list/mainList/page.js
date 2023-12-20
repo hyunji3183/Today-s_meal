@@ -9,10 +9,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 export default function () {
 	const [DBdata, setDBdata] = useState();
 	const [haveTr, setHaveTr] = useState(false);
-	const [myListData, setMyListData] = useState();
 	const [posData, setPosData] = useState();
 	const [postingTime, setPostingTime] = useState('');
-	const [comLength, setComLength] = useState();
 
 	useEffect(() => {
 		const loginCheck = async function () {
@@ -41,8 +39,7 @@ export default function () {
 			const getdata = await axios.get("/api/list?type=list&mode=getAllPost");
 			const reverseData = [...getdata.data].reverse();
 			setPosData(reverseData);
-			console.log(getdata.data);
-
+			// console.log(getdata.data);
 
 			const TimeAgo = (dateString) => {
 				const start = new Date(dateString);
@@ -74,13 +71,9 @@ export default function () {
 		getCom();
 	}, [])
 	const getCom = async function (v_id) {
-		// console.log(v_id);
-		console.log('실행!');
 		const AllCom_id = await axios.post('/api/list?type=com&mode=getId',{ids:'array'});
 		const idArray = AllCom_id.data;
-		console.log(idArray);
 		const AllComment = await axios.post('/api/list?type=com&mode=addCount', { ids: idArray });
-		// return AllComment.data;
 	}
 
 
