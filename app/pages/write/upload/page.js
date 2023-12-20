@@ -133,7 +133,8 @@ export default function page() {
           post_trainer: DBdata?.tr_code,
           post_trLike: '',
           post_judge: '',
-          post_boolean: true
+          post_boolean: true,
+          post_comCount:0
         }
         axios
           .post("/api/write?type=list&mode=insert", sendPost)
@@ -157,7 +158,8 @@ export default function page() {
           post_trainer: DBdata?.mb_code,
           post_trLike: '',
           post_judge: '',
-          post_boolean: false
+          post_boolean: false,
+          post_comCount:0
         }
         axios
           .post("/api/write?type=list&mode=insert", sendPost)

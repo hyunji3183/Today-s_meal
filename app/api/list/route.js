@@ -136,6 +136,29 @@ async function postDB(type, mode, data) {
         const post_ID = data.id;
         result = await toMeal_comment.find({ com_from: post_ID }).toArray();
     }
+    //식단 리스트의 고유id 배열에 담기
+    if (type === 'com' && mode === 'getId') {
+        const idArray = await toMeal_list.find({}, { projection: { _id: 1 } }).toArray();
+        result = idArray.map(obj => obj._id.toString());
+    }
+    //해당 게시글에 등록된 댓글 갯수 가져와서 list db에 추가하기
+    if (type === 'com' && mode === 'addCount') {
+        const idArray = data.ids;
+
+        const updateIdArray = idArray.map(async (post_ID) => {
+            const { ObjectId } = require('mongodb');
+            const objectId = new ObjectId(post_ID);
+            const commentCount = await toMeal_comment.countDocuments({ com_from: post_ID });
+
+            await toMeal_list.updateOne(
+                { _id: objectId },
+                { $set: { "post_comCount": commentCount } }
+            );
+        });
+        await Promise.all(updateIdArray);
+
+        result = true;
+    }
 
 
     //댓글 작성자 프로필 가져오기

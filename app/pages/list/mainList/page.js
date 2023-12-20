@@ -12,6 +12,7 @@ export default function () {
 	const [myListData, setMyListData] = useState();
 	const [posData, setPosData] = useState();
 	const [postingTime, setPostingTime] = useState('');
+	const [comLength, setComLength] = useState();
 
 	useEffect(() => {
 		const loginCheck = async function () {
@@ -62,14 +63,25 @@ export default function () {
 				return `${start.toLocaleDateString()}`;
 			};
 			const TimeArray = reverseData.map((post) => {
-				return TimeAgo(post.post_date);})
-				setPostingTime(TimeArray);
-			
-		};
+				return TimeAgo(post.post_date);
+			})
+			setPostingTime(TimeArray);
 
+		};
 		getPost();
 
+		//댓글 개수 출력하기
+		getCom();
 	}, [])
+	const getCom = async function (v_id) {
+		// console.log(v_id);
+		console.log('실행!');
+		const AllCom_id = await axios.post('/api/list?type=com&mode=getId',{ids:'array'});
+		const idArray = AllCom_id.data;
+		console.log(idArray);
+		const AllComment = await axios.post('/api/list?type=com&mode=addCount', { ids: idArray });
+		// return AllComment.data;
+	}
 
 
 	//트레이너->내가 평가해야할 식단 리스트에 추가하기
@@ -188,7 +200,7 @@ export default function () {
 		router.push(`/pages/list/listDetail?${queryString}`);
 	};
 
-	const likeClick = ()=>{
+	const likeClick = () => {
 		router.push('/pages/list/evaluationList');
 	}
 	if (!DBdata) { return <Loading /> }
@@ -216,15 +228,26 @@ export default function () {
 											<figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
-											<figure onClick={() => { nav(v._id) }}>
+											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
 												<img src={base64Blob(v.post_img)} alt='식단 이미지' />
 											</figure>
 											<div className={mainList.con_mid_txt1}>
 												<div className={mainList.con_mid_txt1s}>
 													<p>트레이너 평가</p>
-													<p>[좋아요]</p>
+													{
+														v.post_trLike === "" ?
+															<p>[미평가]</p>
+															:
+															<p>{v.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
+													}
+
 												</div>
-												<span>트레이너 평가전입니다.</span>
+												{
+													v.post_judge == '' ?
+														<span>트레이너 평가전입니다.</span>
+														:
+														<span>{v.post_judge}</span>
+												}
 											</div>
 											<div className={mainList.con_mid_txt2}>
 												<p>{v.post_text}</p>
@@ -241,7 +264,7 @@ export default function () {
 													</div>
 													<p onClick={likeClick}>김수미님 외 2명</p>
 												</div>
-												<span>댓글 0</span>
+												<span>댓글 <p>{v.post_comCount}</p></span>
 											</div>
 											<div className={mainList.con_bot_txt2}>
 												<div onClick={faceClick}>

@@ -42,8 +42,13 @@
             > figure {
               width: 53px;
               height: 53px;
-              border-radius: 50%;
               margin-right: 10px;
+              border-radius: 50%;
+              background-color: #E4EFFF;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              overflow: hidden;
               img {
                 width: 100%;
               }
@@ -154,6 +159,7 @@
               color: #9b9b9b;
               font-size: 13px;
               font-family: "NotoSansKR-Regular";
+              p{display: inline-block}
             }
           }
           .con_bot_txt2 {
