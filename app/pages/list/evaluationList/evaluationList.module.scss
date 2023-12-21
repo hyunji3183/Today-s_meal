@@ -85,3 +85,25 @@
 		}
 	}
 }
+@media (max-width:479px){
+	.evaluationList_wrap{
+		width: 100%;
+		.evaluationList_list{
+			>ul{
+				padding: 20px 30px;
+				max-width: 90%;
+				>li{
+					>figure{
+						display: none;
+					}
+					>p{
+						margin-right: 0px;
+					}
+				}
+			}
+			button{
+				max-width: 90%;
+			}
+		}
+	}
+}
