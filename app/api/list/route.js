@@ -1,4 +1,4 @@
-import { toMeal_trainer, toMeal_member, toMeal_list, toMeal_comment, toMeal_face, toMeal_trainerMeal, toMeal_memberMeal } from '../db.js'
+import { toMeal_trainer, toMeal_member, toMeal_list, toMeal_comment, toMeal_face, toMeal_trainerMeal, toMeal_memberMeal, toMeal_reply } from '../db.js'
 
 async function getDB(type) {
     let result;
@@ -10,6 +10,7 @@ async function getDB(type) {
         case 'face': result = await toMeal_face.find().toArray(); break;
         case 'trMeal': result = await toMeal_trainerMeal.find().toArray(); break;
         case 'mbMeal': result = await toMeal_memberMeal.find().toArray(); break;
+        case 're': result = await toMeal_reply.find().toArray(); break;
     }
     return result;
 }
@@ -104,34 +105,62 @@ async function postDB(type, mode, data) {
         result = true;
     }
 
+    //메인리스트출력
+    if (type == 'list' && mode === 'getAllPost') {
+        const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
+    }
+
+    //mealList 페이지 출력
+    if (type == 'list' && mode === 'getMealPost') {
+        const userTrID = data.trid;
+        const userMbID = data.mbid;
+
+        if (userTrID != null) {//트레이너
+            const findUser = await toMeal_trainer.find({ tr_id: userTrID }).toArray();
+            const userCode = findUser[0].tr_code;
+            const famPost = await toMeal_list.find({ post_trainer: userCode }).toArray();
+            result = famPost;
+        }
+        if (userMbID != null) {//일반회원
+            const findUser = await toMeal_member.find({ mb_id: userMbID }).toArray();
+            const user_id = findUser[0]._id;
+            const mbPost = await toMeal_list.find({ post_user: user_id.toString() }).toArray();
+            result = mbPost;
+        }
+    }
+
+    //식단 리스트의 고유id 배열에 담기
+    if (type === 'com' && mode === 'getId') {
+        const idArray = await toMeal_list.find({}, { projection: { _id: 1 } }).toArray();
+        result = idArray.map(obj => obj._id.toString());
+    }
+    //해당 게시글에 등록된 댓글 갯수 가져와서 list db에 추가하기
+    if (type === 'com' && mode === 'addCount') {
+        const idArray = data.ids;
+        const updateIdArray = idArray.map(async (post_ID) => {
+            const { ObjectId } = require('mongodb');
+            const objectId = new ObjectId(post_ID);
+            const commentCount = await toMeal_comment.countDocuments({ com_from: post_ID });
+
+            await toMeal_list.updateOne(
+                { _id: objectId },
+                { $set: { "post_comCount": commentCount } }
+            );
+        });
+        await Promise.all(updateIdArray);
+        result = true;
+    }
+
     //댓글내용저장
     if (type === 'com' && mode === 'commentUpdate') {
         result = await toMeal_comment.insertOne(data);
     }
 
-    //메인리스트출력
-    if (type == 'list' && mode === 'getAllPost') {
-        const result = await toMeal_list.find().sort({ _id: -1 }).toArray();
+    //대댓글 저장
+    if (type === 're' && mode === 'replyUpdate') {
+        result = await toMeal_reply.insertOne(data);
     }
-//mealList 페이지 출력
-    if (type == 'list' && mode === 'getMealPost') {
-        const userTrID = data.trid;
-        const userMbID = data.mbid;
 
-        if(userTrID != null){//트레이너
-            const findUser = await toMeal_trainer.find({ tr_id : userTrID }).toArray();
-            const userCode = findUser[0].tr_code;
-            const famPost = await toMeal_list.find({ post_trainer: userCode }).toArray();
-            result = famPost;
-        }
-        if(userMbID != null){//일반회원
-            const findUser = await toMeal_member.find({ mb_id : userMbID}).toArray();
-            const user_id = findUser[0]._id;
-            const mbPost = await toMeal_list.find({ post_user: user_id.toString()}).toArray();
-            result = mbPost;
-        }
-
-    }
     //게시글 디테일 출력
     if (type === 'pos' && mode === 'getDetailPost') {
         const post_ID = data.id;
@@ -146,29 +175,13 @@ async function postDB(type, mode, data) {
         const post_ID = data.id;
         result = await toMeal_comment.find({ com_from: post_ID }).toArray();
     }
-    //식단 리스트의 고유id 배열에 담기
-    if (type === 'com' && mode === 'getId') {
-        const idArray = await toMeal_list.find({}, { projection: { _id: 1 } }).toArray();
-        result = idArray.map(obj => obj._id.toString());
+
+    //해당 댓글에 등록된 대댓글 가져오기
+    if (type === 're' && mode === 'get_reply') {
+        const replyId = data.id;
+        result = await toMeal_reply.find({ reply_from: replyId }).toArray();
     }
-    //해당 게시글에 등록된 댓글 갯수 가져와서 list db에 추가하기
-    if (type === 'com' && mode === 'addCount') {
-        const idArray = data.ids;
 
-        const updateIdArray = idArray.map(async (post_ID) => {
-            const { ObjectId } = require('mongodb');
-            const objectId = new ObjectId(post_ID);
-            const commentCount = await toMeal_comment.countDocuments({ com_from: post_ID });
-
-            await toMeal_list.updateOne(
-                { _id: objectId },
-                { $set: { "post_comCount": commentCount } }
-            );
-        });
-        await Promise.all(updateIdArray);
-
-        result = true;
-    }
 
 
     //댓글 작성자 프로필 가져오기
