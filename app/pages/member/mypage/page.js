@@ -110,19 +110,19 @@ export default function page() {
     return afterFloor;
   }
   //이미지 base64 코드를 blob으로 짧게 줄이기
-  const base64Blob = function (b64Data, contentType = '') {
-    const image_data = atob(b64Data.split(',')[1]);
+  // const base64Blob = function (b64Data, contentType = '') {
+  //   const image_data = atob(b64Data.split(',')[1]);
 
-    const arraybuffer = new ArrayBuffer(image_data.length);
-    const view = new Uint8Array(arraybuffer);
+  //   const arraybuffer = new ArrayBuffer(image_data.length);
+  //   const view = new Uint8Array(arraybuffer);
 
-    for (let i = 0; i < image_data.length; i++) {
-      view[i] = image_data.charCodeAt(i) & 0xff;
-    }
+  //   for (let i = 0; i < image_data.length; i++) {
+  //     view[i] = image_data.charCodeAt(i) & 0xff;
+  //   }
 
-    const blob = new Blob([arraybuffer], { type: contentType });
-    return URL.createObjectURL(blob);
-  }
+  //   const blob = new Blob([arraybuffer], { type: contentType });
+  //   return URL.createObjectURL(blob);
+  // }
   //이미지 첨부
   const [imageView, setImageView] = useState();
   const inputRef = useRef();
@@ -214,7 +214,7 @@ export default function page() {
             <figure><img src=
               {
                 haveTr ?
-                  `${base64Blob(DBdata?.tr_img)}` : `${base64Blob(DBdata?.mb_img)}`
+                  DBdata?.tr_img : DBdata?.mb_img
               }
               alt='프로필 이미지' /></figure>
             <figure>
@@ -360,7 +360,8 @@ export default function page() {
                   familyData.map((family) => (
                     <li key={family._id}>
                       <div className={mypage.membership_list_txt}>
-                        <figure><img src={base64Blob(family.mb_img)} alt='회원이미지' /></figure>
+                        {/* <figure><img src={base64Blob(family.mb_img)} alt='회원이미지' /></figure> */}
+                        <figure><img src={family.mb_img} alt='회원이미지' /></figure>
                         <p>{family.mb_name} 님</p>
                       </div>
                       <p onClick={() => deleteMember(family.mb_id)}>[삭제]</p>

@@ -142,15 +142,19 @@ export default function () {
   return (
     <div className={mealList.mealList_wrap}>
       <header>
-        <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
-        <p>오늘의 식단</p>
-        <p>여기에 나만 볼수있는 내식단이라는 얘기가 있으면 좋을듯? 홈이랑 구분이 잘 안감</p>
+          <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
+          {
+            haveTr ?
+            <p>내 회원 식단</p>
+            :
+            <p>나만의 식단</p>
+          }
       </header>
       {
         myPosData ?
           myPosData.length <= 0 ?
             <li className={mealList.noList}>
-                <p>아직 작성된 글이 없습니다.</p>
+              <p>아직 작성된 글이 없습니다.</p>
             </li> :
             myPosData.map((v, k) => {
               return (

@@ -129,6 +129,31 @@ async function postDB(type, mode, data) {
         }
     }
 
+        //댓글 좋아요+
+        if (type === 'com' && mode === 'likeCount') {
+            const comID = data;
+            const { ObjectId } = require('mongodb');
+            const objectId = new ObjectId(comID);
+    
+            await toMeal_comment.updateOne(
+                { _id: objectId },
+                { $inc: { com_like: 1 } }
+            );
+            result = true;
+        }
+        //대댓글 좋아요+
+        if (type === 're' && mode === 'replyLikeCount') {
+            const replyID = data;
+            const { ObjectId } = require('mongodb');
+            const objectId = new ObjectId(replyID);
+    
+            await toMeal_reply.updateOne(
+                { _id: objectId },
+                { $inc: { reply_like: 1 } }
+            );
+            result = true;
+        }
+
     //식단 리스트의 고유id 배열에 담기
     if (type === 'com' && mode === 'getId') {
         const idArray = await toMeal_list.find({}, { projection: { _id: 1 } }).toArray();

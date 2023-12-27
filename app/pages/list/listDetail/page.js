@@ -8,9 +8,8 @@ import { info } from 'sass';
 
 export default function page() {
     const nav = useRouter();
-    const write = useRef();
-    const newCom = useRef();
-    const comment = useRef();
+    const write = useRef(null);
+    const newCom = useRef(null);
 
     const arrowClick = () => {
         nav.push('/pages/list/mainList')
@@ -117,38 +116,35 @@ export default function page() {
         const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date) }));
         setPos(posData);
     }
+
     //해당 게시글에 등록된 댓글 가져오기
     const get_review = async () => {
         const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
         const commentData = AllComment.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.com_date) }));
         setCom(commentData)
-        // const user_data = commentData.map(item => item.com_user);
+    }
 
-        // const getComUser = await axios.post('/api/list?type=com&mode=getComData', { user: user_data });
-        // setMemData(getComUser.data.checkMem)
-        // setTrData(getComUser.data.checkTr)
-        // console.log(getComUser.data.checkMem);
-        // console.log(getComUser.data.checkTr)
-        console.log(commentData);
+    const NewCommnent = (commentId) => {
+        newCom.current.style = `display: block;`
+        setSelectItem(commentId)
+        console.log(commentId);
     }
 
     //해당 댓글에 등록된 대댓글 가져오기
     useEffect(() => {
+        console.log(selectItem);
         if (selectItem !== null) {
             const get_reply = async () => {
                 const AllReply = await axios.post('/api/list?type=re&mode=get_reply', { id: selectItem });
                 const ReplyData = AllReply.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.reply_date) }));
+                console.log(selectItem);
                 setReplyData(ReplyData)
+                console.log(ReplyData);
             }
-            get_reply()
+            get_reply();
         }
     }, [selectItem])
 
-    const NewCommnent = (commentId) => {
-        // newCom.current.style = `display: block;`
-        setSelectItem(commentId)
-        console.log(commentId);
-    }
 
     //댓글내용저장
     const save_comment = async (e) => {
@@ -162,7 +158,8 @@ export default function page() {
                 com_user: user_id,
                 com_from: postId,
                 com_userImg: DBdata?.tr_img,
-                com_userName: DBdata?.tr_name
+                com_userName: DBdata?.tr_name,
+                com_like: 0
             }
             const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
             setComData(response.data);
@@ -174,7 +171,8 @@ export default function page() {
                 com_user: user_id,
                 com_from: postId,
                 com_userImg: DBdata?.mb_img,
-                com_userName: DBdata?.mb_name
+                com_userName: DBdata?.mb_name,
+                com_like: 0
             }
             const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
             setComData(response.data);
@@ -186,8 +184,10 @@ export default function page() {
     //대댓글저장
     const save_newComment = async (e) => {
         e.preventDefault();
-        newCom.current.style = `display: none;`
-        comment.current.style = `display: flex;`
+        if (newCom.current) {
+            newCom.current.style = `display: none;`;
+        }
+
         const user_id = DBdata?._id;
         const in_newTxt = e.target.text.value
 
@@ -199,9 +199,10 @@ export default function page() {
                 reply_user: user_id, //댓 작성자 고유 ID
                 reply_from: selectItem, //어떤 댓글의 대댓글인지 원본 댓글 고유 ID
                 reply_userImg: DBdata?.tr_img, //유저프로필사진
-                reply_userName: DBdata?.tr_name //유저이름
+                reply_userName: DBdata?.tr_name, //유저이름
+                reply_like: 0
             }
-            const res = await axios.post('/api/list?type=com&mode=commentUpdate', commentData);
+            const res = await axios.post('/api/list?type=re&mode=replyUpdate', commentData);
             setReply(res.data);
         }
         else {
@@ -211,13 +212,27 @@ export default function page() {
                 reply_user: user_id,
                 reply_from: selectItem,
                 reply_userImg: DBdata?.mb_img,
-                reply_userName: DBdata?.mb_name
+                reply_userName: DBdata?.mb_name,
+                reply_like: 0
             }
             const res = await axios.post('/api/list?type=re&mode=replyUpdate', commentData);
             setReply(res.data);
-            console.log(commentData);
-            console.log(selectItem);
         }
+    }
+
+    //댓글 좋아요 
+    const likeClick = async function (com_id) {
+        const sendIDs = com_id;
+        console.log(sendIDs);
+        const likeCount = await axios.post('/api/list?type=com&mode=likeCount', { id: sendIDs });
+        window.location.reload();
+    }
+    //대댓글 좋아요 
+    const replyLikeClick = async function (reply_id) {
+        const sendIDs = reply_id;
+        console.log(sendIDs);
+        const likeCount = await axios.post('/api/list?type=re&mode=replyLikeCount', { id: sendIDs });
+        window.location.reload();
     }
 
 
@@ -281,25 +296,29 @@ export default function page() {
                                     <span>{item.formattedDate}</span>
                                     <p>{item.com_text}</p>
                                     <div className={listDetail.comment_txt2}>
-                                        <div>
+                                        <div onClick={() => likeClick(item._id)}>
                                             <span>좋아요</span>
-                                            <span>5</span>
+                                            <span>{item.com_like}</span>
                                         </div>
                                         <span onClick={() => NewCommnent(item._id)}>답글쓰기</span>
                                     </div>
-                                    {replyData && replyData.map((item, key) => (
-                                        <div className={listDetail.comment_one} ref={comment} key={key}>
-                                            <figure><img src={item.reply_userImg} alt='회원 이미지' /></figure>
-                                            <div className={listDetail.comment_txt1}>
-                                                <p>{item.reply_userName}</p>
-                                                <span>{item.formattedDate}</span>
-                                                <p>{item.reply_text}</p>
-                                                <div className={listDetail.comment_txt2}>
-                                                    <span>좋아요</span>
+                                    {
+                                        // item._id === replyData ?
+                                        replyData && replyData.map((item, key) => (
+                                            <div className={listDetail.comment_one} key={key}>
+                                                <figure><img src={item.reply_userImg} alt='회원 이미지' /></figure>
+                                                <div className={listDetail.comment_txt1}>
+                                                    <p>{item.reply_userName}</p>
+                                                    <span>{item.formattedDate}</span>
+                                                    <p>{item.reply_text}</p>
+                                                    <div className={listDetail.comment_txt2} onClick={() => replyLikeClick(item._id)}>
+                                                        <span>좋아요</span>
+                                                        <span>{item.reply_like}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                            </div>))
+                                        // )) : (console.log('no'))
+                                    }
                                     <div className={listDetail.newComment_box} ref={newCom}>
                                         <form className={listDetail.newComment} onSubmit={save_newComment}>
                                             <label htmlFor='text'>
@@ -316,7 +335,6 @@ export default function page() {
                     )}
                 </ul>
             </div>
-
             <div className={listDetail.write} ref={write}>
                 <div className={listDetail.write_list}>
                     <button>글 <span>삭제</span>하기</button>
