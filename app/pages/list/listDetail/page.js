@@ -4,6 +4,7 @@ import listDetail from './listDetail.module.scss'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { info } from 'sass';
+import Loading from '@/app/com/loading';
 
 
 export default function page() {
@@ -243,43 +244,45 @@ export default function page() {
                 <p>게시글 상세</p>
                 <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
             </header>
-            {pos && pos.map((item, key) => (
-                <div className={listDetail.con} key={key}>
-                    <div className={listDetail.con_top}>
-                        <figure><img src={item.post_userImg} alt='회원 이미지' /></figure>
-                        <div className={listDetail.con_top_txt}>
-                            <p><span>{item.post_title}</span>님의 <span>{item.post_when}</span>식단</p>
-                            <span>{item.formattedDate}</span>
-                        </div>
-                    </div>
-                    <div className={listDetail.con_mid}>
-                        <figure><img src={item.post_img} alt='식단 이미지' /></figure>
-                        <p>{item.post_text}</p>
-                    </div>
-                    <div className={listDetail.con_bot}>
-                        <div className={listDetail.con_bot_txt}>
-                            <p>트레이너 평가</p>
-                            {
-                                item.post_trLike === "" ?
-                                    <p>[미평가]</p>
-                                    :
-                                    <p>{item.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
-                            }
-                        </div>
-                        {
-                            item.post_judge == '' ?
-                                <div className={listDetail.con_bot_txt2}>
-                                    <span>트레이너 평가전입니다.</span>
-                                    <span onClick={() => { evaluate(postId) }}>평가하기</span>
+            {
+                !pos ? <Loading /> :
+                    pos && pos.map((item, key) => (
+                        <div className={listDetail.con} key={key}>
+                            <div className={listDetail.con_top}>
+                                <figure><img src={item.post_userImg} alt='회원 이미지' /></figure>
+                                <div className={listDetail.con_top_txt}>
+                                    <p><span>{item.post_title}</span>님의 <span>{item.post_when}</span>식단</p>
+                                    <span>{item.formattedDate}</span>
                                 </div>
-                                :
-                                <div className={listDetail.con_bot_txt2}>
-                                    <span>{item.post_judge}</span>
+                            </div>
+                            <div className={listDetail.con_mid}>
+                                <figure><img src={item.post_img} alt='식단 이미지' /></figure>
+                                <p>{item.post_text}</p>
+                            </div>
+                            <div className={listDetail.con_bot}>
+                                <div className={listDetail.con_bot_txt}>
+                                    <p>트레이너 평가</p>
+                                    {
+                                        item.post_trLike === "" ?
+                                            <p>[미평가]</p>
+                                            :
+                                            <p>{item.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
+                                    }
                                 </div>
-                        }
-                    </div>
-                </div>
-            ))}
+                                {
+                                    item.post_judge == '' ?
+                                        <div className={listDetail.con_bot_txt2}>
+                                            <span>트레이너 평가전입니다.</span>
+                                            <span onClick={() => { evaluate(postId) }}>평가하기</span>
+                                        </div>
+                                        :
+                                        <div className={listDetail.con_bot_txt2}>
+                                            <span>{item.post_judge}</span>
+                                        </div>
+                                }
+                            </div>
+                        </div>
+                    ))}
             <div className={listDetail.comment}>
                 <p>댓글 {com?.length}</p>
                 <ul>
