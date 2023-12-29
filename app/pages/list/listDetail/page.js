@@ -16,10 +16,10 @@ export default function page() {
         nav.push('/pages/list/mainList')
     }
     const dotClick = () => {
-        write.current.style = `transform:translateY(0px)`
+        write.current.style.transform = `transform:translateY(0px)`
     }
     const closeClick = () => {
-        write.current.style = `transform: translateY(230px)`
+        write.current.style.transform = `transform: translateY(230px)`
     }
 
 
@@ -52,34 +52,31 @@ export default function page() {
             }
         }
         loginCheck();
-        get_Post();
-        get_review();
+        getPost();
+        getreview();
     }, [])
 
     //트레이너 평가페이지 이동
     const router = useRouter();
     const evaluate = (id) => {
         //url받아오기
-        const createQuery = (params) => {
-            const queryString = new URLSearchParams(params)
-            return queryString;
-        }
+        const createQuery = (params) => new URLSearchParams(params);
         const queryString = createQuery({ id });
 
         const isTr = sessionStorage.getItem('tr_id');
         const postTrcode = pos[0].post_trainer;
 
         if (isTr != null) {
-            //작성자의 트레이너 코드와 일치해야만 평가 작성가능
-            if (DBdata?.tr_code == postTrcode) {
+            if (DBdata?.tr_code === postTrcode) {
                 router.push(`/pages/list/trainerEvaluation?${queryString}`);
             } else {
-                alert('나의 관리회원만 평가할 수 있습니다!')
+                alert('나의 관리회원만 평가할 수 있습니다!');
             }
         } else {
-            alert('트레이너만 평가가 가능합니다!')
+            alert('트레이너만 평가가 가능합니다!');
         }
-    }
+    };
+
 
 
     const [comData, setComData] = useState();
@@ -112,88 +109,55 @@ export default function page() {
     const data = useSearchParams();
     const postId = data.get('id');
     // 게시글 디테일 출력
-    const get_Post = async function () {
+    const getPost = async function () {
         const get_pos = await axios.post('/api/list?type=pos&mode=getDetailPost', { id: postId });
         const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date) }));
         setPos(posData);
     }
     //해당 게시글에 등록된 댓글 가져오기
-    const get_review = async () => {
+    const getreview = async () => {
         const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
         const commentData = AllComment.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.com_date) }));
         setCom(commentData)
-
-        console.log(commentData);
     }
 
     //댓글내용저장
-    const save_comment = async (e) => {
+    const savecomment = async (e) => {
         e.preventDefault();
-        const user_id = DBdata?._id;
-        const in_txt = e.target.text.value
-        if (haveTr) {
-            const info = {
-                com_text: in_txt,
-                com_date: Date.now(),
-                com_user: user_id,
-                com_from: postId,
-                com_userImg: DBdata?.tr_img,
-                com_userName: DBdata?.tr_name
-            }
-            const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
-            setComData(response.data);
-        }
-        else {
-            const info = {
-                com_text: in_txt,
-                com_date: Date.now(),
-                com_user: user_id,
-                com_from: postId,
-                com_userImg: DBdata?.mb_img,
-                com_userName: DBdata?.mb_name
-            }
-            const response = await axios.post('/api/list?type=com&mode=commentUpdate', info);
-            setComData(response.data);
-        }
-        window.location.reload()
+        const userid = DBdata?._id;
+        const intxt = e.target.text.value;
+        const commentInfo = {
+            com_text: intxt,
+            com_date: Date.now(),
+            com_user: userid,
+            com_from: postId,
+            com_userImg: haveTr ? DBdata?.tr_img : DBdata?.mb_img,
+            com_userName: haveTr ? DBdata?.tr_name : DBdata?.mb_name
+        };
+
+        const response = await axios.post('/api/list?type=com&mode=commentUpdate', commentInfo);
+        setComData(response.data);
+        window.location.reload();
         e.target.text.value = '';
     }
 
     //대댓글저장
-    const save_newComment = async (e) => {
+    const saveNewComment = async (e) => {
         e.preventDefault();
-        newCom.current.style = `display: none;`
-        const user_id = DBdata?._id;
-        const in_newTxt = e.target.text.value
-
-        console.log(e);
-        if (haveTr) {
-            const commentData = {
-                reply_text: in_newTxt, //댓글 내용
-                reply_date: Date.now(), //댓 작성 일자
-                reply_user: user_id, //댓 작성자 고유 ID
-                reply_from: selectItem, //어떤 댓글의 대댓글인지 원본 댓글 고유 ID
-                reply_userImg: DBdata?.tr_img, //유저프로필사진
-                reply_userName: DBdata?.tr_name //유저이름
-            }
-            const res = await axios.post('/api/list?type=com&mode=commentUpdate', commentData);
-            setReply(res.data);
-        }
-        else {
-            const commentData = {
-                reply_text: in_newTxt,
-                reply_date: Date.now(),
-                reply_user: user_id,
-                reply_from: selectItem,
-                reply_userImg: DBdata?.mb_img,
-                reply_userName: DBdata?.mb_name
-            }
-            const res = await axios.post('/api/list?type=re&mode=replyUpdate', commentData);
-            setReply(res.data);
-            console.log(commentData);
-            console.log(selectItem);
-        }
-        window.location.reload()
+        newCom.current.style = `display:none;`
+        const userid = DBdata?._id;
+        const newIntxt = e.target.text.value
+        const commentData = {
+            reply_text: newIntxt,
+            reply_date: Date.now(),
+            reply_user: userid,
+            reply_from: selectItem,
+            reply_userImg: haveTr ? DBdata?.tr_img : DBdata?.mb_img,
+            reply_userName: haveTr ? DBdata?.tr_name : DBdata?.mb_name,
+        };
+        const res = await axios.post('/api/list?type=re&mode=replyUpdate', commentData);
+        setReply(res.data);
+        window.location.reload();
         e.target.text.value = '';
     }
 
@@ -212,7 +176,6 @@ export default function page() {
 
     const NewCommnent = (commentId, k) => {
         newCom.current[k].classList.toggle(listDetail.reply)
-
         setSelectItem(commentId)
         console.log(commentId);
     }
@@ -300,7 +263,7 @@ export default function page() {
                                             ) : ('')
                                     ))}
                                     <div className={listDetail.newComment_box} ref={(element) => newCom.current[key] = element}>
-                                        <form className={listDetail.newComment} onSubmit={save_newComment}>
+                                        <form className={listDetail.newComment} onSubmit={saveNewComment}>
                                             <label htmlFor='text'>
                                                 <textarea type='text' name='text' placeholder={`${item.com_userName} 님에게 답글 남기는 중...`} />
                                             </label>
@@ -324,7 +287,7 @@ export default function page() {
                 <button onClick={closeClick}>닫기</button>
             </div>
 
-            <form className={listDetail.comment_wrap} onSubmit={save_comment}>
+            <form className={listDetail.comment_wrap} onSubmit={savecomment}>
                 <input type='text' name='text' placeholder='댓글 남기기' />
                 <input type='submit' value='등록' />
             </form>
