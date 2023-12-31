@@ -71,7 +71,7 @@ export default function () {
 		getCom();
 	}, [])
 	const getCom = async function (v_id) {
-		const AllCom_id = await axios.post('/api/list?type=com&mode=getId',{ids:'array'});
+		const AllCom_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
 		const idArray = AllCom_id.data;
 		const AllComment = await axios.post('/api/list?type=com&mode=addCount', { ids: idArray });
 	}
@@ -157,9 +157,18 @@ export default function () {
 	const write = useRef();
 	const faceImg = useRef();
 	const faceIcons = useRef();
-	const dotClick = () => {
+	const [postid, setPostId] = useState();
+
+	const dotClick = (id) => {
 		write.current.style = `transform:translateY(0px)`
+		setPostId(id)
 	}
+
+	const postDelete = async function () {
+		console.log(postid);
+		const delPost = await axios.delete("/api/list?type=list&mode=postDelete", { data: { id: postid } });
+	}
+
 	const closeClick = () => {
 		write.current.style = `transform: translateY(230px)`
 	}
@@ -178,8 +187,6 @@ export default function () {
 			});
 		}
 	}, [faceIcons]);
-
-
 
 	const router = useRouter();
 
@@ -218,7 +225,7 @@ export default function () {
 													<span> {postingTime[k]}</span>
 												</div>
 											</div>
-											<figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
+											<figure onClick={() => { dotClick(v._id) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
 											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
@@ -286,7 +293,7 @@ export default function () {
 			}
 			<div className={mainList.write} ref={write}>
 				<div className={mainList.write_list}>
-					<button>글 <span>삭제</span>하기</button>
+					<button onClick={postDelete}>글 <span>삭제</span>하기</button>
 					<button>글 <span>수정</span>하기</button>
 				</div>
 				<button onClick={closeClick}>닫기</button>

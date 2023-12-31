@@ -46,6 +46,21 @@ async function postDB(type, mode, data) {
         );
     }
 
+
+
+
+
+
+    //게시글 삭제
+    if (type === 'list' && mode === 'postDelete') {
+        console.log(data);
+        result = await toMeal_list.deleteOne();
+    }
+
+
+
+
+
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
     if (type === 'tr' && mode === 'familyGet') {//내 회원들 정보 가져오기
         const getById = data.myFam;
@@ -129,30 +144,30 @@ async function postDB(type, mode, data) {
         }
     }
 
-        //댓글 좋아요+
-        if (type === 'com' && mode === 'likeCount') {
-            const comID = data;
-            const { ObjectId } = require('mongodb');
-            const objectId = new ObjectId(comID);
-    
-            await toMeal_comment.updateOne(
-                { _id: objectId },
-                { $inc: { com_like: 1 } }
-            );
-            result = true;
-        }
-        //대댓글 좋아요+
-        if (type === 're' && mode === 'replyLikeCount') {
-            const replyID = data;
-            const { ObjectId } = require('mongodb');
-            const objectId = new ObjectId(replyID);
-    
-            await toMeal_reply.updateOne(
-                { _id: objectId },
-                { $inc: { reply_like: 1 } }
-            );
-            result = true;
-        }
+    //댓글 좋아요+
+    if (type === 'com' && mode === 'likeCount') {
+        const comID = data;
+        const { ObjectId } = require('mongodb');
+        const objectId = new ObjectId(comID);
+
+        await toMeal_comment.updateOne(
+            { _id: objectId },
+            { $inc: { com_like: 1 } }
+        );
+        result = true;
+    }
+    //대댓글 좋아요+
+    if (type === 're' && mode === 'replyLikeCount') {
+        const replyID = data;
+        const { ObjectId } = require('mongodb');
+        const objectId = new ObjectId(replyID);
+
+        await toMeal_reply.updateOne(
+            { _id: objectId },
+            { $inc: { reply_like: 1 } }
+        );
+        result = true;
+    }
 
     //식단 리스트의 고유id 배열에 담기
     if (type === 'com' && mode === 'getId') {

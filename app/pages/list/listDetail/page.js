@@ -77,8 +77,6 @@ export default function page() {
         }
     };
 
-
-
     const [comData, setComData] = useState();
     const [pos, setPos] = useState();
     const [com, setCom] = useState();
