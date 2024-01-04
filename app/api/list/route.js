@@ -190,6 +190,28 @@ async function postDB(type, mode, data) {
         await Promise.all(updateIdArray);
         result = true;
     }
+    //표정 추가
+    if (type === 'face' && mode === 'addFaces') {
+        const idArray = data.ids;
+        const updateIdArray = idArray.map(async (post_ID) => {
+            const { ObjectId } = require('mongodb');
+            const objectId = new ObjectId(post_ID);
+
+            const faceCount = await toMeal_face.countDocuments({ face_from: post_ID });
+            const latestFaceName = await toMeal_face.findOne(
+                { face_from: post_ID },
+                { sort: { _id: -1 } } //최신순을 찾기위해
+            );
+            const lastName = latestFaceName ? latestFaceName.face_userName : null;
+                console.log(lastName);
+            await toMeal_list.updateOne(
+                { _id: objectId },
+                { $set: { "post_faceCount": faceCount, "post_faceName": lastName } }
+            );
+        });
+        await Promise.all(updateIdArray);
+        result = true;
+    }
 
     //댓글내용저장
     if (type === 'com' && mode === 'commentUpdate') {
@@ -220,6 +242,23 @@ async function postDB(type, mode, data) {
     if (type === 're' && mode === 'get_reply') {
         const replyId = data.id;
         result = await toMeal_reply.find({ reply_from: replyId }).toArray();
+    }
+
+    //표정 faceDB로 보내기
+    if (type === 'face' && mode === 'faceUpdate') {
+        //0은 좋아요 / 1은 보통 / 2는 싫어요
+        const userID = data.face_user;
+        const postID = data.face_from;
+        const didAlready = await toMeal_face.countDocuments({ face_from: postID, face_user: userID });
+        if (didAlready == 1) {//이미 표정짓기 했을 경우 제거하기
+            await toMeal_face.deleteOne({ face_from: postID, face_user: userID });
+        } else {//한적 없을경우 그대로 DB에 추가
+            await toMeal_face.insertOne(data);
+        }
+        result = await toMeal_face.find().toArray();
+    }
+    if (type === 'face' && mode === 'getFace') {
+        result = await toMeal_face.find().toArray();
     }
 
 

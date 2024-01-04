@@ -10,6 +10,7 @@ export default function () {
 	const [DBdata, setDBdata] = useState();
 	const [haveTr, setHaveTr] = useState(false);
 	const [posData, setPosData] = useState();
+	const [faceData, setFaceData] = useState();
 	const [postingTime, setPostingTime] = useState('');
 
 	useEffect(() => {
@@ -39,7 +40,7 @@ export default function () {
 			const getdata = await axios.get("/api/list?type=list&mode=getAllPost");
 			const reverseData = [...getdata.data].reverse();
 			setPosData(reverseData);
-			// console.log(getdata.data);
+			console.log(getdata.data);
 
 			const TimeAgo = (dateString) => {
 				const start = new Date(dateString);
@@ -69,13 +70,23 @@ export default function () {
 
 		//댓글 개수 출력하기
 		getCom();
+		//표정 출력하기
+		getFace();
 	}, [])
 	const getCom = async function (v_id) {
 		const AllCom_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
 		const idArray = AllCom_id.data;
 		const AllComment = await axios.post('/api/list?type=com&mode=addCount', { ids: idArray });
 	}
+	const getFace = async function () {
+		const faceRes = await axios.get("/api/list?type=face&mode=getFace");
+		setFaceData(faceRes.data);
+		console.log(faceRes.data);
 
+		const AllList_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
+		const idArray2 = AllList_id.data;
+		const addFaces = await axios.post('/api/list?type=face&mode=addFaces', { ids: idArray2 });
+	}
 
 	//트레이너->내가 평가해야할 식단 리스트에 추가하기
 	const makeTrMealList = async function (data) {
@@ -117,7 +128,6 @@ export default function () {
 		const listData = { dbId: data._id };
 		const resList = await axios.post("/api/list?type=mb&mode=listIDGet", listData);
 		const haveList = await axios.post("/api/list?type=mb&mode=listIDCheck", listData);
-		// console.log(resList.data);
 
 		if (haveList.data == 0) {
 			//신규 DB생성
@@ -155,25 +165,18 @@ export default function () {
 	}
 
 	const write = useRef();
-	const faceImg = useRef();
+	const faceImg = useRef({});
 	const faceIcons = useRef();
-	const [postid, setPostId] = useState();
-
-	const dotClick = (id) => {
+	//게시글 팝업
+	const dotClick = () => {
 		write.current.style = `transform:translateY(0px)`
-		setPostId(id)
 	}
-
-	const postDelete = async function () {
-		console.log(postid);
-		const delPost = await axios.delete("/api/list?type=list&mode=postDelete", { data: { id: postid } });
-	}
-
 	const closeClick = () => {
 		write.current.style = `transform: translateY(230px)`
 	}
-	const faceClick = () => {
-		faceImg.current.classList.toggle(mainList.faces)
+	//표정 팝업
+	const faceClick = (k) => {
+		faceImg.current[k].classList.toggle(mainList.faces)
 	}
 	useEffect(() => {
 		if (faceIcons.current) {
@@ -187,6 +190,8 @@ export default function () {
 			});
 		}
 	}, [faceIcons]);
+
+
 
 	const router = useRouter();
 
@@ -202,6 +207,35 @@ export default function () {
 
 	const likeClick = () => {
 		router.push('/pages/list/evaluationList');
+	}
+	//표정 DB로 보내기
+	const whichFace = async function (e, vid) {
+		const liEl = e.currentTarget.parentNode;
+		//index 0은 좋아요 / 1은 보통 / 2는 싫어요
+		const index = Array.from(liEl.parentNode.children).indexOf(liEl);
+		let send = {};
+		if (haveTr) {
+			send = {
+				face_user: DBdata?._id,
+				face_userName: DBdata?.tr_name,
+				face_userImg: DBdata?.tr_img,
+				face_from: vid,
+				face_which: index
+			}
+		} else {
+			send = {
+				face_user: DBdata?._id,
+				face_userName: DBdata?.mb_name,
+				face_userImg: DBdata?.mb_img,
+				face_from: vid,
+				face_which: index
+			}
+		}
+		const faceRes = await axios.post("/api/list?type=face&mode=faceUpdate", send);
+		console.log(faceRes.data);
+		setFaceData(faceRes.data);
+		window.location.reload();
+
 	}
 	if (!DBdata) { return <Loading /> }
 	return (
@@ -225,7 +259,7 @@ export default function () {
 													<span> {postingTime[k]}</span>
 												</div>
 											</div>
-											<figure onClick={() => { dotClick(v._id) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
+											<figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
 											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
@@ -254,7 +288,8 @@ export default function () {
 												<span onClick={() => { nav(v._id) }}>더보기</span>
 											</div>
 										</div>
-										<div className={mainList.con_bot}>
+
+										<div className={mainList.con_bot} >
 											<div className={mainList.con_bot_txt1}>
 												<div className={mainList.con_bot_txt1_flex}>
 													<div>
@@ -262,12 +297,21 @@ export default function () {
 														<figure><img src='/2_1.png' alt='표정이미지' /></figure>
 														<figure><img src='/3_1.png' alt='표정이미지' /></figure>
 													</div>
-													<p onClick={likeClick}>김수미님 외 2명</p>
+													<p onClick={likeClick}>
+														{v.post_faceName ? (
+															<>
+																{v.post_faceName}님
+																{v.post_faceCount == 1 ? '이 표정을 남겼어요!' : <> 외 {v.post_faceCount - 1}명</>}
+															</>
+														) : (
+															<>아직 작성된 표정이 없습니다</>
+														)}
+													</p>
 												</div>
 												<span>댓글 <p>{v.post_comCount}</p></span>
 											</div>
 											<div className={mainList.con_bot_txt2}>
-												<div onClick={faceClick}>
+												<div onClick={() => faceClick(k)}>
 													<figure><img src='/expression.png' alt='표정짓기' /></figure>
 													<p>표정짓기</p>
 												</div>
@@ -276,11 +320,11 @@ export default function () {
 													<p onClick={() => { nav(v._id) }}>댓글달기</p>
 												</div>
 											</div>
-											<div className={mainList.con_bot_txt3} ref={faceImg}>
+											<div className={mainList.con_bot_txt3} ref={(el) => faceImg.current[k] = el}>
 												<ul ref={faceIcons}>
-													<li><figure></figure></li>
-													<li><figure></figure></li>
-													<li><figure></figure></li>
+													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
 												</ul>
 											</div>
 										</div>
@@ -293,7 +337,7 @@ export default function () {
 			}
 			<div className={mainList.write} ref={write}>
 				<div className={mainList.write_list}>
-					<button onClick={postDelete}>글 <span>삭제</span>하기</button>
+					<button>글 <span>삭제</span>하기</button>
 					<button>글 <span>수정</span>하기</button>
 				</div>
 				<button onClick={closeClick}>닫기</button>
