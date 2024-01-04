@@ -4,6 +4,7 @@ import listDetail from './listDetail.module.scss'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { info } from 'sass';
+import Loading from '@/app/com/loading';
 
 
 export default function page() {
@@ -177,6 +178,21 @@ export default function page() {
         console.log(commentId);
     }
 
+    //댓글 좋아요 
+    const likeClick = async function (com_id) {
+        const sendIDs = com_id;
+        console.log(sendIDs);
+        const likeCount = await axios.post('/api/list?type=com&mode=likeCount', { id: sendIDs });
+        window.location.reload();
+    }
+    //대댓글 좋아요 
+    const replyLikeClick = async function (reply_id) {
+        const sendIDs = reply_id;
+        console.log(sendIDs);
+        const likeCount = await axios.post('/api/list?type=re&mode=replyLikeCount', { id: sendIDs });
+        window.location.reload();
+    }
+    if (!pos) { return <Loading /> }
     return (
         <div className={listDetail.listDetail_wrap}>
             <header>
@@ -237,9 +253,9 @@ export default function page() {
                                     <span>{item.formattedDate}</span>
                                     <p>{item.com_text}</p>
                                     <div className={listDetail.comment_txt2}>
-                                        <div>
+                                        <div onClick={() => likeClick(item._id)}>
                                             <span>좋아요</span>
-                                            <span>5</span>
+                                            <span>{item.com_like}</span>
                                         </div>
                                         <span onClick={() => NewCommnent(item._id, key)}>답글쓰기</span>
                                     </div>
@@ -252,8 +268,9 @@ export default function page() {
                                                         <p>{re.reply_userName}</p>
                                                         <span>{re.formattedDate}</span>
                                                         <p>{re.reply_text}</p>
-                                                        <div className={listDetail.comment_txt2}>
+                                                        <div className={listDetail.comment_txt2} onClick={() => replyLikeClick(re._id)}>
                                                             <span>좋아요</span>
+                                                            <span>{re.reply_like}</span>
                                                         </div>
                                                     </div>
                                                 </div>
