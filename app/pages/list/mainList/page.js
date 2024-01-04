@@ -40,7 +40,6 @@ export default function () {
 			const getdata = await axios.get("/api/list?type=list&mode=getAllPost");
 			const reverseData = [...getdata.data].reverse();
 			setPosData(reverseData);
-			console.log(getdata.data);
 
 			const TimeAgo = (dateString) => {
 				const start = new Date(dateString);
@@ -79,10 +78,6 @@ export default function () {
 		const AllComment = await axios.post('/api/list?type=com&mode=addCount', { ids: idArray });
 	}
 	const getFace = async function () {
-		const faceRes = await axios.get("/api/list?type=face&mode=getFace");
-		setFaceData(faceRes.data);
-		console.log(faceRes.data);
-
 		const AllList_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
 		const idArray2 = AllList_id.data;
 		const addFaces = await axios.post('/api/list?type=face&mode=addFaces', { ids: idArray2 });
@@ -165,12 +160,20 @@ export default function () {
 	}
 
 	const write = useRef();
-	const faceImg = useRef({});
+	const faceImg = useRef([]);
 	const faceIcons = useRef();
-	//게시글 팝업
-	const dotClick = () => {
+	const [postid, setPostId] = useState();
+
+	const dotClick = (id) => {
 		write.current.style = `transform:translateY(0px)`
+		setPostId(id)
 	}
+
+	const postDelete = async function () {
+		console.log(postid);
+		const delPost = await axios.delete("/api/list?type=list&mode=postDelete", { data: { id: postid } });
+	}
+
 	const closeClick = () => {
 		write.current.style = `transform: translateY(230px)`
 	}
@@ -205,8 +208,15 @@ export default function () {
 		router.push(`/pages/list/listDetail?${queryString}`);
 	};
 
-	const likeClick = () => {
-		router.push('/pages/list/evaluationList');
+	const likeClick = (id) => {
+		const createQuery = (params) => {
+			const queryString = new URLSearchParams(params)
+			return queryString;
+		}
+
+		const queryString = createQuery({ id });
+		router.push(`/pages/list/evaluationList?${queryString}`);
+
 	}
 	//표정 DB로 보내기
 	const whichFace = async function (e, vid) {
@@ -232,8 +242,7 @@ export default function () {
 			}
 		}
 		const faceRes = await axios.post("/api/list?type=face&mode=faceUpdate", send);
-		console.log(faceRes.data);
-		setFaceData(faceRes.data);
+
 		window.location.reload();
 
 	}
@@ -259,7 +268,7 @@ export default function () {
 													<span> {postingTime[k]}</span>
 												</div>
 											</div>
-											<figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
+											<figure onClick={() => { dotClick(v._id) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
 											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
@@ -297,7 +306,7 @@ export default function () {
 														<figure><img src='/2_1.png' alt='표정이미지' /></figure>
 														<figure><img src='/3_1.png' alt='표정이미지' /></figure>
 													</div>
-													<p onClick={likeClick}>
+													<p onClick={() => { likeClick(v._id) }}>
 														{v.post_faceName ? (
 															<>
 																{v.post_faceName}님
@@ -337,7 +346,7 @@ export default function () {
 			}
 			<div className={mainList.write} ref={write}>
 				<div className={mainList.write_list}>
-					<button>글 <span>삭제</span>하기</button>
+					<button onClick={postDelete}>글 <span>삭제</span>하기</button>
 					<button>글 <span>수정</span>하기</button>
 				</div>
 				<button onClick={closeClick}>닫기</button>
