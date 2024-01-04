@@ -47,8 +47,12 @@ async function postDB(type, mode, data) {
     }
     //게시글 삭제
     if (type === 'list' && mode === 'postDelete') {
-        console.log(data);
-        result = await toMeal_list.deleteOne();
+        const postId = data.p_id;
+        const useId = data.us_id;
+        const { ObjectId } = require('mongodb');
+        const objectId = new ObjectId(useId);
+        console.log(postId, useId);
+        result = await toMeal_list.deleteOne({ "post_user": useId, "_id": objectId });
     }
 
     //트레이너->내가 평가해야할 식단 리스트에 추가하기

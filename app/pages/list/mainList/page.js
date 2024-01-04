@@ -167,11 +167,14 @@ export default function () {
 	const dotClick = (id) => {
 		write.current.style = `transform:translateY(0px)`
 		setPostId(id)
+		console.log(id);
+		console.log(DBdata._id);
 	}
 
 	const postDelete = async function () {
-		console.log(postid);
-		const delPost = await axios.delete("/api/list?type=list&mode=postDelete", { data: { id: postid } });
+		const send = { us_id: DBdata._id, p_id: postid }
+		console.log(send);
+		const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
 	}
 
 	const closeClick = () => {
