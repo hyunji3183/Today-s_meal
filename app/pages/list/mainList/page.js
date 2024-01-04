@@ -160,7 +160,7 @@ export default function () {
 	}
 
 	const write = useRef();
-	const faceImg = useRef([]);
+	const faceImg = useRef({});
 	const faceIcons = useRef();
 	const [postid, setPostId] = useState();
 
