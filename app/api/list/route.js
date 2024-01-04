@@ -45,21 +45,11 @@ async function postDB(type, mode, data) {
             { "mbMeal_id": whoseList }, { $set: { "mbMeal_list": listId } }
         );
     }
-
-
-
-
-
-
     //게시글 삭제
     if (type === 'list' && mode === 'postDelete') {
         console.log(data);
         result = await toMeal_list.deleteOne();
     }
-
-
-
-
 
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
     if (type === 'tr' && mode === 'familyGet') {//내 회원들 정보 가져오기
@@ -203,7 +193,6 @@ async function postDB(type, mode, data) {
                 { sort: { _id: -1 } } //최신순을 찾기위해
             );
             const lastName = latestFaceName ? latestFaceName.face_userName : null;
-                console.log(lastName);
             await toMeal_list.updateOne(
                 { _id: objectId },
                 { $set: { "post_faceCount": faceCount, "post_faceName": lastName } }
@@ -211,6 +200,11 @@ async function postDB(type, mode, data) {
         });
         await Promise.all(updateIdArray);
         result = true;
+    }
+    //표정 디테일 페이지
+    if (type === 'face' && mode === 'getById') {
+        const post_id = data.postid;
+        result = await toMeal_face.find({ face_from: post_id }).toArray();
     }
 
     //댓글내용저장
@@ -260,24 +254,6 @@ async function postDB(type, mode, data) {
     if (type === 'face' && mode === 'getFace') {
         result = await toMeal_face.find().toArray();
     }
-
-
-
-    //댓글 작성자 프로필 가져오기
-    // if (type === 'com' && mode === 'getComData') {
-    //     const userArray = data.user;
-    //     const { ObjectId } = require('mongodb');
-    //     const com_user_ID = userArray.map(id => new ObjectId(id));
-    //     const checkMem = await toMeal_member.find({ _id: { $in: com_user_ID } }).toArray();
-    //     const checkTr = await toMeal_trainer.find({ _id: { $in: com_user_ID } }).toArray();
-    //     result = {
-    //         checkMem: checkMem,
-    //         checkTr: checkTr
-    //     };
-    // }
-
-
-
 
     return result;
 }
