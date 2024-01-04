@@ -170,7 +170,6 @@ export default function page() {
             get_reply();
         }
     }, [selectItem])
-    console.log(replyData);
 
     const NewCommnent = (commentId, k) => {
         newCom.current[k].classList.toggle(listDetail.reply)
