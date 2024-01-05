@@ -37,25 +37,24 @@ export default function page() {
                 <figure onClick={arrowClick}><img src='/arrow_left.png' alt='뒤로가기' /></figure>
                 <p>평가한 사람 보기</p>
             </header>
-
             <div className={evaluationList.evaluationList_list}>
                 <ul>
-                    {   faceEvalData.length > 0? 
-                        faceEvalData.map((v, k) => (
-                            <li key={k}>
-                                <figure className={evaluationList.profile}><img src={v.face_userImg} alt='유저 프로필 사진'/></figure>
-                                <p>{v.face_userName}님</p>
-                                <div className={evaluationList.faces}>
-                                    {v.face_which === 0? <figure><img src='/1_1.png' alt='' /></figure> :<figure><img src='/1.png' alt='' /></figure>}
-                                    {v.face_which === 1? <figure><img src='/2_1.png' alt='' /></figure> :<figure><img src='/2.png' alt='' /></figure>}
-                                    {v.face_which === 2? <figure><img src='/3_1.png' alt='' /></figure> :<figure><img src='/3.png' alt='' /></figure>}
-                                </div>
-                            </li>
-                        ))
-                        :
-                        <p className={evaluationList.exception}>아직 작성된 표정 평가가 없습니다.</p>
+                    {
+                        faceEvalData.length > 0 ?
+                            faceEvalData.map((v, k) => (
+                                <li key={k}>
+                                    <figure className={evaluationList.profile}><img src={v.face_userImg} alt='유저 프로필 사진' /></figure>
+                                    <p>{v.face_userName}님</p>
+                                    <div className={evaluationList.faces}>
+                                        {v.face_which === 0 ? <figure><img src='/1_1.png' alt='' /></figure> : <figure><img src='/1.png' alt='' /></figure>}
+                                        {v.face_which === 1 ? <figure><img src='/2_1.png' alt='' /></figure> : <figure><img src='/2.png' alt='' /></figure>}
+                                        {v.face_which === 2 ? <figure><img src='/3_1.png' alt='' /></figure> : <figure><img src='/3.png' alt='' /></figure>}
+                                    </div>
+                                </li>
+                            )) : (
+                                <li className={evaluationList.nothing}>아직 작성된 표정이 없습니다</li>
+                            )
                     }
-
                 </ul>
                 <button onClick={close}>닫기</button>
             </div>

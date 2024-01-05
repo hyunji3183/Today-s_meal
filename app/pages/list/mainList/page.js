@@ -163,18 +163,24 @@ export default function () {
 	const faceImg = useRef({});
 	const faceIcons = useRef();
 	const [postid, setPostId] = useState();
+	const [postuser, setPostUser] = useState();
 
-	const dotClick = (id) => {
+	const dotClick = (id, user) => {
 		write.current.style = `transform:translateY(0px)`
 		setPostId(id)
-		console.log(id);
-		console.log(DBdata._id);
+		setPostUser(user)
 	}
 
 	const postDelete = async function () {
-		const send = { us_id: DBdata._id, p_id: postid }
-		console.log(send);
-		const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
+		if (postuser !== DBdata._id) {
+			alert('꺼졍')
+			write.current.style = `transform: translateY(230px)`
+		} else {
+			const send = { us_id: postuser, p_id: postid }
+			const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
+			const delComment = await axios.post("/api/list?type=list&mode=commentDelete", { p_id: postid });
+			window.location.reload();
+		}
 	}
 
 	const closeClick = () => {
@@ -271,7 +277,7 @@ export default function () {
 													<span> {postingTime[k]}</span>
 												</div>
 											</div>
-											<figure onClick={() => { dotClick(v._id) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
+											<figure onClick={() => { dotClick(v._id, v.post_user) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 										</div>
 										<div className={mainList.con_mid}>
 											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>

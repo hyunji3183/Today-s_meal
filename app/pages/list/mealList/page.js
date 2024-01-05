@@ -77,10 +77,10 @@ export default function () {
     getFace();
   }, [])
   const getFace = async function () {
-		const AllList_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
-		const idArray2 = AllList_id.data;
-		const addFaces = await axios.post('/api/list?type=face&mode=addFaces', { ids: idArray2 });
-	}
+    const AllList_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
+    const idArray2 = AllList_id.data;
+    const addFaces = await axios.post('/api/list?type=face&mode=addFaces', { ids: idArray2 });
+  }
 
   //댓글 개수 출력하기
   const getCom = async function (v_id) {
@@ -108,9 +108,23 @@ export default function () {
   const write = useRef();
   const faceImg = useRef({});
   const faceIcons = useRef();
-  const dotClick = () => {
+  const [postid, setPostId] = useState();
+  const [postuser, setPostUser] = useState();
+
+  const dotClick = (id, user) => {
     write.current.style = `transform:translateY(0px)`
+    setPostId(id)
+    setPostUser(user)
   }
+  const postDelete = async function () {
+    if (postuser === DBdata._id) {
+      const send = { us_id: postuser, p_id: postid }
+      const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
+      const delComment = await axios.post("/api/list?type=list&mode=commentDelete", { p_id: postid });
+      window.location.reload();
+    }
+  }
+
   const closeClick = () => {
     write.current.style = `transform: translateY(230px)`
   }
@@ -204,7 +218,7 @@ export default function () {
                             <span> {postingTime[k]}</span>
                           </div>
                         </div>
-                        <figure onClick={dotClick}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
+                        <figure onClick={() => { dotClick(v._id, v.post_user) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
                       </div>
                       <div className={mealList.con_mid}>
                         <figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
@@ -282,7 +296,7 @@ export default function () {
       }
       <div className={mealList.write} ref={write}>
         <div className={mealList.write_list}>
-          <button>글 <span>삭제</span>하기</button>
+          <button onClick={postDelete}>글 <span>삭제</span>하기</button>
           <button>글 <span>수정</span>하기</button>
         </div>
         <button onClick={closeClick}>닫기</button>
