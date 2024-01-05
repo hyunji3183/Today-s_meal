@@ -52,6 +52,14 @@ export default function page() {
       return;
     }
     console.log(insertData);
+
+    //회원mealList에 좋싫 추가하기
+    if(likeHate==0){//좋아요
+      let evalTest = await axios.post("/api/list?type=list&mode=goodEval", {id:postid});
+    }else if (likeHate==1){//싫어요
+      let evalTest = await axios.post("/api/list?type=list&mode=badEval", {id:postid});
+    }
+
     let res = await axios.post("/api/list?type=list&mode=judge", insertData)
     //등록시 id일치하는 원글로 돌려보내기
     nav.push(`/pages/list/listDetail?id=${postid}`);

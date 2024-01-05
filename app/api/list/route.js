@@ -113,6 +113,35 @@ async function postDB(type, mode, data) {
         // result = await toMeal_list.find({ _id: findListId }).toArray();
         result = true;
     }
+    //평가된 식단 => 회원 식단리스트에 좋싫 추가하기
+    if (type === 'list' && mode === 'goodEval') {//좋아요
+        const postid = data.id;
+        const { ObjectId } = require('mongodb');
+        const findListId = new ObjectId(postid);
+        //식단id로 작성 회원 찾기
+        const whoseList = await toMeal_list.find( { _id: findListId } ).toArray();
+        const findWho = whoseList.map(item => item.post_user);
+        //작성 회원에 평가 추가하기
+        const findMealList = await toMeal_memberMeal.updateOne( 
+            { mbMeal_id: { $in: findWho } },
+            { $addToSet: { "mbMeal_like": postid } }//중복 방지 위해 push 대신 addToSet 사용
+        )
+        result = true;
+    }
+    if (type === 'list' && mode === 'badEval') {//싫어요
+        const postid = data.id;
+        const { ObjectId } = require('mongodb');
+        const findListId = new ObjectId(postid);
+        //식단id로 작성 회원 찾기
+        const whoseList = await toMeal_list.find( { _id: findListId } ).toArray();
+        const findWho = whoseList.map(item => item.post_user);
+        //작성 회원에 평가 추가하기
+        const findMealList = await toMeal_memberMeal.updateOne( 
+            { mbMeal_id: { $in: findWho } },
+            { $addToSet: { "mbMeal_hate": postid } }//중복 방지 위해 push 대신 addToSet 사용
+        )
+        result = true;
+    }
 
     //메인리스트출력
     if (type == 'list' && mode === 'getAllPost') {

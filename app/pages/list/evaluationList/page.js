@@ -40,7 +40,7 @@ export default function page() {
 
             <div className={evaluationList.evaluationList_list}>
                 <ul>
-                    {   
+                    {   faceEvalData.length > 0? 
                         faceEvalData.map((v, k) => (
                             <li key={k}>
                                 <figure className={evaluationList.profile}><img src={v.face_userImg} alt='유저 프로필 사진'/></figure>
@@ -52,6 +52,8 @@ export default function page() {
                                 </div>
                             </li>
                         ))
+                        :
+                        <p className={evaluationList.exception}>아직 작성된 표정 평가가 없습니다.</p>
                     }
 
                 </ul>

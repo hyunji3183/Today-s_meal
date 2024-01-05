@@ -74,7 +74,14 @@ export default function () {
     };
     getPost();
     getCom();
+    getFace();
   }, [])
+  const getFace = async function () {
+		const AllList_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
+		const idArray2 = AllList_id.data;
+		const addFaces = await axios.post('/api/list?type=face&mode=addFaces', { ids: idArray2 });
+	}
+
   //댓글 개수 출력하기
   const getCom = async function (v_id) {
     const AllCom_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
@@ -99,7 +106,7 @@ export default function () {
   }
 
   const write = useRef();
-  const faceImg = useRef();
+  const faceImg = useRef({});
   const faceIcons = useRef();
   const dotClick = () => {
     write.current.style = `transform:translateY(0px)`
@@ -107,8 +114,36 @@ export default function () {
   const closeClick = () => {
     write.current.style = `transform: translateY(230px)`
   }
-  const faceClick = () => {
-    faceImg.current.classList.toggle(mealList.faces)
+  const faceClick = (k) => {
+    faceImg.current[k].classList.toggle(mealList.faces)
+  }
+  //표정 DB로 보내기
+  const whichFace = async function (e, vid) {
+    const liEl = e.currentTarget.parentNode;
+    //index 0은 좋아요 / 1은 보통 / 2는 싫어요
+    const index = Array.from(liEl.parentNode.children).indexOf(liEl);
+    let send = {};
+    if (haveTr) {
+      send = {
+        face_user: DBdata?._id,
+        face_userName: DBdata?.tr_name,
+        face_userImg: DBdata?.tr_img,
+        face_from: vid,
+        face_which: index
+      }
+    } else {
+      send = {
+        face_user: DBdata?._id,
+        face_userName: DBdata?.mb_name,
+        face_userImg: DBdata?.mb_img,
+        face_from: vid,
+        face_which: index
+      }
+    }
+    const faceRes = await axios.post("/api/list?type=face&mode=faceUpdate", send);
+
+    window.location.reload();
+
   }
   useEffect(() => {
     if (faceIcons.current) {
@@ -142,13 +177,13 @@ export default function () {
   return (
     <div className={mealList.mealList_wrap}>
       <header>
-          <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
-          {
-            haveTr ?
+        <figure><img src="/character.png" alt="캐릭터 이미지" /></figure>
+        {
+          haveTr ?
             <p>내 회원 식단</p>
             :
             <p>나만의 식단</p>
-          }
+        }
       </header>
       {
         myPosData ?
@@ -206,12 +241,21 @@ export default function () {
                               <figure><img src='/2_1.png' alt='표정이미지' /></figure>
                               <figure><img src='/3_1.png' alt='표정이미지' /></figure>
                             </div>
-                            <p onClick={likeClick}>김수미님 외 2명</p>
+                            <p onClick={() => { likeClick(v._id) }}>
+                              {v.post_faceName ? (
+                                <>
+                                  {v.post_faceName}님
+                                  {v.post_faceCount == 1 ? '이 표정을 남겼어요!' : <> 외 {v.post_faceCount - 1}명</>}
+                                </>
+                              ) : (
+                                <>아직 작성된 표정이 없습니다</>
+                              )}
+                            </p>
                           </div>
                           <span>댓글 <p>{v.post_comCount}</p></span>
                         </div>
                         <div className={mealList.con_bot_txt2}>
-                          <div onClick={faceClick}>
+                          <div onClick={() => faceClick(k)}>
                             <figure><img src='/expression.png' alt='표정짓기' /></figure>
                             <p>표정짓기</p>
                           </div>
@@ -220,11 +264,11 @@ export default function () {
                             <p onClick={() => { nav(v._id) }}>댓글달기</p>
                           </div>
                         </div>
-                        <div className={mealList.con_bot_txt3} ref={faceImg}>
+                        <div className={mealList.con_bot_txt3} ref={(el) => faceImg.current[k] = el}>
                           <ul ref={faceIcons}>
-                            <li><figure></figure></li>
-                            <li><figure></figure></li>
-                            <li><figure></figure></li>
+                            <li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+                            <li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+                            <li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
                           </ul>
                         </div>
                       </div>
