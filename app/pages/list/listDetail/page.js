@@ -8,22 +8,6 @@ import Loading from '@/app/com/loading';
 
 
 export default function page() {
-    const nav = useRouter();
-    const write = useRef();
-    const newCom = useRef({});
-    const replyBtn = useRef();
-
-    const arrowClick = () => {
-        nav.push('/pages/list/mainList')
-    }
-    const dotClick = () => {
-        write.current.style.transform = `transform:translateY(0px)`
-    }
-    const closeClick = () => {
-        write.current.style.transform = `transform: translateY(230px)`
-    }
-
-
     const [DBdata, setDBdata] = useState();
     const [haveTr, setHaveTr] = useState(false);
     const [UsName, setUsName] = useState();
@@ -113,6 +97,7 @@ export default function page() {
         const posData = get_pos.data.map(item => ({ ...item, formattedDate: formatTimeAgo(item.post_date) }));
         setPos(posData);
     }
+
     //해당 게시글에 등록된 댓글 가져오기
     const getreview = async () => {
         const AllComment = await axios.post('/api/list?type=com&mode=post_from', { id: postId });
@@ -151,6 +136,7 @@ export default function page() {
             reply_date: Date.now(),
             reply_user: userid,
             reply_from: selectItem,
+            reply_post: postId,
             reply_userImg: haveTr ? DBdata?.tr_img : DBdata?.mb_img,
             reply_userName: haveTr ? DBdata?.tr_name : DBdata?.mb_name,
         };
@@ -177,6 +163,36 @@ export default function page() {
         setSelectItem(commentId)
         console.log(commentId);
     }
+
+    const nav = useRouter();
+    const write = useRef();
+    const newCom = useRef({});
+
+    const arrowClick = () => {
+        nav.push('/pages/list/mainList')
+    }
+    const dotClick = () => {
+        //게시글 고유번호
+        write.current.style = `transform:translateY(0px)`
+    }
+
+    const postDelete = async function () {
+        const postuser = pos[0].post_user;
+        if (postuser !== DBdata._id) {
+            alert('꺼졍')
+            write.current.style = `transform: translateY(230px)`
+        } else {
+            const send = { us_id: postuser, p_id: postId }
+            const delPost = await axios.post("/api/list?type=delete&mode=postDelete", send);
+            const delComment = await axios.post("/api/list?type=delete&mode=commentDelete", { p_id: postId });
+            nav.push('/pages/list/mainList')
+        }
+    }
+
+    const closeClick = () => {
+        write.current.style = `transform: translateY(230px)`
+    }
+
 
     //댓글 좋아요 
     const likeClick = async function (com_id) {
@@ -295,7 +311,7 @@ export default function page() {
 
             <div className={listDetail.write} ref={write}>
                 <div className={listDetail.write_list}>
-                    <button>글 <span>삭제</span>하기</button>
+                    <button onClick={postDelete}>글 <span>삭제</span>하기</button>
                     <button>글 <span>수정</span>하기</button>
                 </div>
                 <button onClick={closeClick}>닫기</button>

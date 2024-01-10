@@ -22,6 +22,17 @@
       color: #5498ff;
     }
   }
+  
+  .noList{
+    width: 100%; height: 84vh; overflow: hidden; 
+    display: flex; justify-content: center; align-items: center;
+    p{
+      font-size: 28px;
+      font-family: "Han_Sans";
+      color: #5498ff;
+    }
+  }
+
   .con {
     > ul {
       > li {

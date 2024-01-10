@@ -46,19 +46,22 @@ async function postDB(type, mode, data) {
         );
     }
     //게시글 삭제
-    if (type === 'list' && mode === 'postDelete') {
+    if (type === 'delete' && mode === 'postDelete') {
         const postId = data.p_id;
         const useId = data.us_id;
         const { ObjectId } = require('mongodb');
         const objectId = new ObjectId(postId);
         result = await toMeal_list.deleteOne({ "post_user": useId, "_id": objectId });
     }
-    
+
     //삭제하는 게시글에 포함된 댓글 지우기
-    if (type === 'list' && mode === 'commentDelete') {
+    if (type === 'delete' && mode === 'commentDelete') {
         const postId = data.p_id;
-        result = await toMeal_comment.deleteMany({ "com_from": postId });
+        const comment_delete = await toMeal_comment.deleteMany({ "com_from": postId });
+        const reply_delete = await toMeal_reply.deleteMany({ "reply_post": postId });
+        result = true
     }
+
 
     //트레이너->내가 평가해야할 식단 리스트에 추가하기
     if (type === 'tr' && mode === 'familyGet') {//내 회원들 정보 가져오기
@@ -124,10 +127,10 @@ async function postDB(type, mode, data) {
         const { ObjectId } = require('mongodb');
         const findListId = new ObjectId(postid);
         //식단id로 작성 회원 찾기
-        const whoseList = await toMeal_list.find( { _id: findListId } ).toArray();
+        const whoseList = await toMeal_list.find({ _id: findListId }).toArray();
         const findWho = whoseList.map(item => item.post_user);
         //작성 회원에 평가 추가하기
-        const findMealList = await toMeal_memberMeal.updateOne( 
+        const findMealList = await toMeal_memberMeal.updateOne(
             { mbMeal_id: { $in: findWho } },
             { $addToSet: { "mbMeal_like": postid } }//중복 방지 위해 push 대신 addToSet 사용
         )
@@ -138,10 +141,10 @@ async function postDB(type, mode, data) {
         const { ObjectId } = require('mongodb');
         const findListId = new ObjectId(postid);
         //식단id로 작성 회원 찾기
-        const whoseList = await toMeal_list.find( { _id: findListId } ).toArray();
+        const whoseList = await toMeal_list.find({ _id: findListId }).toArray();
         const findWho = whoseList.map(item => item.post_user);
         //작성 회원에 평가 추가하기
-        const findMealList = await toMeal_memberMeal.updateOne( 
+        const findMealList = await toMeal_memberMeal.updateOne(
             { mbMeal_id: { $in: findWho } },
             { $addToSet: { "mbMeal_hate": postid } }//중복 방지 위해 push 대신 addToSet 사용
         )

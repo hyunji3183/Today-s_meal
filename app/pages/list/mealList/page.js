@@ -119,8 +119,8 @@ export default function () {
   const postDelete = async function () {
     if (postuser === DBdata._id) {
       const send = { us_id: postuser, p_id: postid }
-      const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
-      const delComment = await axios.post("/api/list?type=list&mode=commentDelete", { p_id: postid });
+      const delPost = await axios.post("/api/list?type=delete&mode=postDelete", send);
+      const delComment = await axios.post("/api/list?type=delete&mode=commentDelete", { p_id: postid });
       window.location.reload();
     }
   }
@@ -136,23 +136,12 @@ export default function () {
     const liEl = e.currentTarget.parentNode;
     //index 0은 좋아요 / 1은 보통 / 2는 싫어요
     const index = Array.from(liEl.parentNode.children).indexOf(liEl);
-    let send = {};
-    if (haveTr) {
-      send = {
-        face_user: DBdata?._id,
-        face_userName: DBdata?.tr_name,
-        face_userImg: DBdata?.tr_img,
-        face_from: vid,
-        face_which: index
-      }
-    } else {
-      send = {
-        face_user: DBdata?._id,
-        face_userName: DBdata?.mb_name,
-        face_userImg: DBdata?.mb_img,
-        face_from: vid,
-        face_which: index
-      }
+    const send = {
+      face_user: DBdata?._id,
+      face_userName: haveTr ? DBdata?.tr_name : DBdata?.mb_name,
+      face_userImg: haveTr ? DBdata?.tr_img : DBdata?.mb_img,
+      face_from: vid,
+      face_which: index
     }
     const faceRes = await axios.post("/api/list?type=face&mode=faceUpdate", send);
 

@@ -63,10 +63,9 @@ export default function () {
 				return TimeAgo(post.post_date);
 			})
 			setPostingTime(TimeArray);
-
 		};
+		//게시글가져오기
 		getPost();
-
 		//댓글 개수 출력하기
 		getCom();
 		//표정 출력하기
@@ -177,8 +176,8 @@ export default function () {
 			write.current.style = `transform: translateY(230px)`
 		} else {
 			const send = { us_id: postuser, p_id: postid }
-			const delPost = await axios.post("/api/list?type=list&mode=postDelete", send);
-			const delComment = await axios.post("/api/list?type=list&mode=commentDelete", { p_id: postid });
+			const delPost = await axios.post("/api/list?type=delete&mode=postDelete", send);
+			const delComment = await axios.post("/api/list?type=delete&mode=commentDelete", { p_id: postid });
 			window.location.reload();
 		}
 	}
@@ -212,7 +211,6 @@ export default function () {
 			const queryString = new URLSearchParams(params)
 			return queryString;
 		}
-
 		const queryString = createQuery({ id });
 		router.push(`/pages/list/listDetail?${queryString}`);
 	};
@@ -222,7 +220,6 @@ export default function () {
 			const queryString = new URLSearchParams(params)
 			return queryString;
 		}
-
 		const queryString = createQuery({ id });
 		router.push(`/pages/list/evaluationList?${queryString}`);
 
@@ -232,29 +229,17 @@ export default function () {
 		const liEl = e.currentTarget.parentNode;
 		//index 0은 좋아요 / 1은 보통 / 2는 싫어요
 		const index = Array.from(liEl.parentNode.children).indexOf(liEl);
-		let send = {};
-		if (haveTr) {
-			send = {
-				face_user: DBdata?._id,
-				face_userName: DBdata?.tr_name,
-				face_userImg: DBdata?.tr_img,
-				face_from: vid,
-				face_which: index
-			}
-		} else {
-			send = {
-				face_user: DBdata?._id,
-				face_userName: DBdata?.mb_name,
-				face_userImg: DBdata?.mb_img,
-				face_from: vid,
-				face_which: index
-			}
+		const send = {
+			face_user: DBdata?._id,
+			face_userName: haveTr ? DBdata?.tr_name : DBdata?.mb_name,
+			face_userImg: haveTr ? DBdata?.tr_img : DBdata?.mb_img,
+			face_from: vid,
+			face_which: index
 		}
 		const faceRes = await axios.post("/api/list?type=face&mode=faceUpdate", send);
-
 		window.location.reload();
-
 	}
+
 	if (!DBdata) { return <Loading /> }
 	return (
 		<div className={mainList.mainList_wrap}>
@@ -263,95 +248,99 @@ export default function () {
 				<p>오늘의 식단</p>
 			</header>
 			{posData ?
-				posData.map((v, k) => {
-					if (v.post_open === 'on') {
-						return (
-							<div className={mainList.con} key={k} >
-								<ul>
-									<li>
-										<div className={mainList.con_top}>
-											<div className={mainList.con_top_txt1}>
-												<figure><img src={v.post_userImg} alt='회원 이미지' /></figure>
-												<div className={mainList.con_top_txt2}>
-													<p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
-													<span> {postingTime[k]}</span>
-												</div>
-											</div>
-											<figure onClick={() => { dotClick(v._id, v.post_user) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
-										</div>
-										<div className={mainList.con_mid}>
-											<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
-												<img src={base64Blob(v.post_img)} alt='식단 이미지' />
-											</figure>
-											<div className={mainList.con_mid_txt1}>
-												<div className={mainList.con_mid_txt1s}>
-													<p>트레이너 평가</p>
-													{
-														v.post_trLike === "" ?
-															<p>[미평가]</p>
-															:
-															<p>{v.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
-													}
-
-												</div>
-												{
-													v.post_judge == '' ?
-														<span>트레이너 평가전입니다.</span>
-														:
-														<span>{v.post_judge}</span>
-												}
-											</div>
-											<div className={mainList.con_mid_txt2}>
-												<p>{v.post_text}</p>
-												<span onClick={() => { nav(v._id) }}>더보기</span>
-											</div>
-										</div>
-
-										<div className={mainList.con_bot} >
-											<div className={mainList.con_bot_txt1}>
-												<div className={mainList.con_bot_txt1_flex}>
-													<div>
-														<figure><img src='/1_1.png' alt='표정이미지' /></figure>
-														<figure><img src='/2_1.png' alt='표정이미지' /></figure>
-														<figure><img src='/3_1.png' alt='표정이미지' /></figure>
+				posData.length <= 0 ?
+					<li className={mainList.noList}>
+						<p>아직 작성된 글이 없습니다.</p>
+					</li> :
+					posData.map((v, k) => {
+						if (v.post_open === 'on') {
+							return (
+								<div className={mainList.con} key={k} >
+									<ul>
+										<li>
+											<div className={mainList.con_top}>
+												<div className={mainList.con_top_txt1}>
+													<figure><img src={v.post_userImg} alt='회원 이미지' /></figure>
+													<div className={mainList.con_top_txt2}>
+														<p><span>{v.post_title}</span> {v.post_boolean ? '트레이너' : ''}님의 <span>{v.post_when}</span>식단</p>
+														<span> {postingTime[k]}</span>
 													</div>
-													<p onClick={() => { likeClick(v._id) }}>
-														{v.post_faceName ? (
-															<>
-																{v.post_faceName}님
-																{v.post_faceCount == 1 ? '이 표정을 남겼어요!' : <> 외 {v.post_faceCount - 1}명</>}
-															</>
-														) : (
-															<>아직 작성된 표정이 없습니다</>
-														)}
-													</p>
 												</div>
-												<span>댓글 <p>{v.post_comCount}</p></span>
+												<figure onClick={() => { dotClick(v._id, v.post_user) }}><img src='/dot.png' alt='글 삭제, 수정 버튼' /></figure>
 											</div>
-											<div className={mainList.con_bot_txt2}>
-												<div onClick={() => faceClick(k)}>
-													<figure><img src='/expression.png' alt='표정짓기' /></figure>
-													<p>표정짓기</p>
+											<div className={mainList.con_mid}>
+												<figure onClick={() => { nav(v._id) }} style={{ cursor: 'pointer' }}>
+													<img src={base64Blob(v.post_img)} alt='식단 이미지' />
+												</figure>
+												<div className={mainList.con_mid_txt1}>
+													<div className={mainList.con_mid_txt1s}>
+														<p>트레이너 평가</p>
+														{
+															v.post_trLike === "" ?
+																<p>[미평가]</p>
+																:
+																<p>{v.post_trLike == 0 ? '[좋아요💙]' : '[싫어요👎]'}</p>
+														}
+
+													</div>
+													{
+														v.post_judge == '' ?
+															<span>트레이너 평가전입니다.</span>
+															:
+															<span>{v.post_judge}</span>
+													}
 												</div>
-												<div>
-													<figure><img src='/comment.png' alt='댓글달기' /></figure>
-													<p onClick={() => { nav(v._id) }}>댓글달기</p>
+												<div className={mainList.con_mid_txt2}>
+													<p>{v.post_text}</p>
+													<span onClick={() => { nav(v._id) }}>더보기</span>
 												</div>
 											</div>
-											<div className={mainList.con_bot_txt3} ref={(el) => faceImg.current[k] = el}>
-												<ul ref={faceIcons}>
-													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
-													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
-													<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
-												</ul>
+
+											<div className={mainList.con_bot} >
+												<div className={mainList.con_bot_txt1}>
+													<div className={mainList.con_bot_txt1_flex}>
+														<div>
+															<figure><img src='/1_1.png' alt='표정이미지' /></figure>
+															<figure><img src='/2_1.png' alt='표정이미지' /></figure>
+															<figure><img src='/3_1.png' alt='표정이미지' /></figure>
+														</div>
+														<p onClick={() => { likeClick(v._id) }}>
+															{v.post_faceName ? (
+																<>
+																	{v.post_faceName}님
+																	{v.post_faceCount == 1 ? '이 표정을 남겼어요!' : <> 외 {v.post_faceCount - 1}명</>}
+																</>
+															) : (
+																<>아직 작성된 표정이 없습니다</>
+															)}
+														</p>
+													</div>
+													<span>댓글 <p>{v.post_comCount}</p></span>
+												</div>
+												<div className={mainList.con_bot_txt2}>
+													<div onClick={() => faceClick(k)}>
+														<figure><img src='/expression.png' alt='표정짓기' /></figure>
+														<p>표정짓기</p>
+													</div>
+													<div>
+														<figure><img src='/comment.png' alt='댓글달기' /></figure>
+														<p onClick={() => { nav(v._id) }}>댓글달기</p>
+													</div>
+												</div>
+												<div className={mainList.con_bot_txt3} ref={(el) => faceImg.current[k] = el}>
+													<ul ref={faceIcons}>
+														<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+														<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+														<li><figure onClick={(e) => whichFace(e, v._id)}></figure></li>
+													</ul>
+												</div>
 											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-						)
-					}
-				}) : <Loading />
+										</li>
+									</ul>
+								</div>
+							)
+						}
+					}) : <Loading />
 			}
 			<div className={mainList.write} ref={write}>
 				<div className={mainList.write_list}>
