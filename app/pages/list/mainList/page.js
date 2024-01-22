@@ -103,7 +103,7 @@ export default function () {
 		if (haveList.data == 0) {
 			//신규 DB생성
 			const makeTrMeal = {
-				trMeal_id: res.data._id,
+				trMeal_id: data._id,
 				trMeal_list: newListArray,
 				trMeal_needJudge: newListArray
 			};

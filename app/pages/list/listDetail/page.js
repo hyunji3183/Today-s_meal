@@ -298,7 +298,7 @@ export default function page() {
                                                 <textarea type='text' name='text' placeholder={`${item.com_userName} 님에게 답글 남기는 중...`} />
                                             </label>
                                             <label htmlFor='submit'>
-                                                <input type='submit' name='submit' value='등록' />
+                                                <input type='submit' name='submit' value={'등록' || ''} />
                                             </label>
                                         </form>
                                     </div>

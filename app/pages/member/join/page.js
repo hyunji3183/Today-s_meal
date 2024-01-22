@@ -116,7 +116,7 @@ export default function page() {
     //비밀번호 체크
     let regPw = /^(?=.*[A-Za-z])(?=.*\d).{8,15}$/;
     if( !regPw.test(formData.userpw) ){
-      alert('영문+숫자 포함 8-15자로 입력해 주세요');
+      alert('비밀번호는 영문+숫자 포함 8-15자 내로 입력해 주세요');
       return
     }
     //비밀번호 재확인

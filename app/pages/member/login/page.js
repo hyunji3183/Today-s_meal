@@ -43,8 +43,8 @@ export default function page() {
       <figure><img src='/character.png' alt='캐릭터 이미지'/></figure>
       <h2>오늘의 식단</h2>
       <form>
-        <input type="text" value={loginId} placeholder='아이디 입력' onChange={(e)=>setLoginId(e.target.value)}/>
-        <input type="password" value={loginPw} placeholder='비밀번호 입력'onChange={(e)=>setLoginPw(e.target.value)}/>
+        <input type="text" value={loginId||''} placeholder='아이디 입력' onChange={(e)=>setLoginId(e.target.value)}/>
+        <input type="password" value={loginPw||''} placeholder='비밀번호 입력'onChange={(e)=>setLoginPw(e.target.value)}/>
         <input type="submit" onClick={loginClick} value="로그인"/>
       </form>
       <div className={login.login_txt}>

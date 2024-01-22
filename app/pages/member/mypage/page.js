@@ -239,10 +239,10 @@ export default function page() {
             <form onSubmit={changeName}>
               <div className={mypage.bg_top}>
                 <p>이름</p>
-                <input type='text' name='nameInput' maxLength='8' />
+                <input type='text' name='nameInput' maxLength='8'/>
                 <span>최대 8글자</span>
               </div>
-              <input type='submit' value='저장' className={mypage.bg_bot} />
+              <input type='submit' value={'저장'||''} className={mypage.bg_bot} />
             </form>
           </div>
           <div className={mypage.con_right}>
