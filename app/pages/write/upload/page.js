@@ -2,6 +2,7 @@
 import Footer from '@/app/com/Footer'
 import upload from './upload.module.scss'
 import { useRef, useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
 export default function page() {
@@ -70,6 +71,10 @@ export default function page() {
       [name]: value
     }));
   }
+
+
+
+
   //이미지 용량 줄이는 함수1
   const resizeImg = (imageDataURL, maxWidth, maxHeight) => {
     return new Promise((resolve) => {
@@ -109,6 +114,16 @@ export default function page() {
       img.src = imageDataURL;
     });
   };
+
+  
+  //게시글 수정
+  const data = useSearchParams();
+  const postId = data.get('postid');
+
+  // const changePost = async function () {
+  //   const change_pos = await axios.post('/api/write?type=change&mode=changePost', { id: postId });
+  // }
+
   //이미지 업로드
   const uploadFile = function (e) {
     e.preventDefault();
@@ -124,7 +139,7 @@ export default function page() {
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.tr_name,
-          post_userImg : DBdata?.tr_img,
+          post_userImg: DBdata?.tr_img,
           post_when: inputData.time,
           post_text: inputData.text,
           post_open: inputData.check,
@@ -134,7 +149,7 @@ export default function page() {
           post_trLike: '',
           post_judge: '',
           post_boolean: true,
-          post_comCount:0
+          post_comCount: 0
         }
         axios
           .post("/api/write?type=list&mode=insert", sendPost)
@@ -149,7 +164,7 @@ export default function page() {
         const sendPost = {
           post_user: DBdata?._id,
           post_title: DBdata?.mb_name,
-          post_userImg : DBdata?.mb_img,
+          post_userImg: DBdata?.mb_img,
           post_when: inputData.time,
           post_text: inputData.text,
           post_open: inputData.check,
@@ -159,7 +174,7 @@ export default function page() {
           post_trLike: '',
           post_judge: '',
           post_boolean: false,
-          post_comCount:0
+          post_comCount: 0
         }
         axios
           .post("/api/write?type=list&mode=insert", sendPost)
@@ -171,6 +186,8 @@ export default function page() {
       window.location.href = '/pages/list/mainList';
     }, 1000);
   }
+
+
 
   return (
     <div className={upload.upload_wrap}>

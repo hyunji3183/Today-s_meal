@@ -32,6 +32,20 @@ async function postDB(type, mode, data) {
     return result;
 }
 
+
+//게시글 수정
+if (type === 'change' && mode === 'changePost') {
+    console.log(data);
+    // result = await toMeal_list.updateOne({ "tr_id": whoseName });
+    result = true
+
+}
+
+
+
+
+
+
 export async function GET(req) {
     let type = req.nextUrl.searchParams.get('type')
     let result = await getDB(type);

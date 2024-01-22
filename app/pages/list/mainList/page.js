@@ -169,10 +169,10 @@ export default function () {
 		setPostId(id)
 		setPostUser(user)
 	}
-
+	//게시글 삭제
 	const postDelete = async function () {
 		if (postuser !== DBdata._id) {
-			alert('꺼졍')
+			alert('내 게시글만 삭제할 수 있습니다.')
 			write.current.style = `transform: translateY(230px)`
 		} else {
 			const send = { us_id: postuser, p_id: postid }
@@ -181,6 +181,23 @@ export default function () {
 			window.location.reload();
 		}
 	}
+
+	//게시글 수정
+	const postChange = async function () {
+		if (postuser !== DBdata._id) {
+			alert('내 게시글만 수정할 수 있습니다.')
+			write.current.style = `transform: translateY(230px)`
+		} else {
+			const createQuery = (params) => {
+				const queryString = new URLSearchParams(params)
+				return queryString;
+			}
+			const queryString = createQuery({ postid });
+			router.push(`/pages/write/upload?${queryString}`);
+		}
+	}
+
+
 
 	const closeClick = () => {
 		write.current.style = `transform: translateY(230px)`
@@ -345,7 +362,7 @@ export default function () {
 			<div className={mainList.write} ref={write}>
 				<div className={mainList.write_list}>
 					<button onClick={postDelete}>글 <span>삭제</span>하기</button>
-					<button>글 <span>수정</span>하기</button>
+					<button onClick={postChange}>글 <span>수정</span>하기</button>
 				</div>
 				<button onClick={closeClick}>닫기</button>
 			</div>
