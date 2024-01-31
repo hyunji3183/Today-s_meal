@@ -71,6 +71,7 @@ export default function () {
 		//표정 출력하기
 		getFace();
 	}, [])
+
 	const getCom = async function (v_id) {
 		const AllCom_id = await axios.post('/api/list?type=com&mode=getId', { ids: 'array' });
 		const idArray = AllCom_id.data;
@@ -193,7 +194,9 @@ export default function () {
 				return queryString;
 			}
 			const queryString = createQuery({ postid });
-			router.push(`/pages/write/upload?${queryString}`);
+			router.push(`/pages/write/edit?${queryString}`);
+			// const postTextArray = posData.map(post => post.post_text);
+			// console.log(postTextArray );
 		}
 	}
 
@@ -222,7 +225,6 @@ export default function () {
 
 
 	const router = useRouter();
-
 	const nav = (id) => {
 		const createQuery = (params) => {
 			const queryString = new URLSearchParams(params)

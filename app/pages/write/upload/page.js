@@ -115,15 +115,6 @@ export default function page() {
     });
   };
 
-  
-  //게시글 수정
-  const data = useSearchParams();
-  const postId = data.get('postid');
-
-  // const changePost = async function () {
-  //   const change_pos = await axios.post('/api/write?type=change&mode=changePost', { id: postId });
-  // }
-
   //이미지 업로드
   const uploadFile = function (e) {
     e.preventDefault();

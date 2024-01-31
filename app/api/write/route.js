@@ -29,17 +29,28 @@ async function postDB(type, mode, data) {
         const mealListId = data.dbId;
         result = await toMeal_list.updateOne({ post_user: { $in: mealListId } }).toArray();
     }
+
+    //게시글 수정
+    if (type === 'change' && mode === 'changePost') {
+        const postId = data.post_id;
+        const img = data.post_img;
+        const txt = data.post_text;
+        const when = data.post_when;
+        const open = data.post_open;
+
+        const { ObjectId } = require('mongodb');
+        const objectId = new ObjectId(postId);
+
+        result = await toMeal_list.updateOne({ _id: objectId },
+            { $set: { "post_text": txt, "post_img": img, "post_when": when, "post_open": open } }
+        );
+    }
+
     return result;
 }
 
 
-//게시글 수정
-if (type === 'change' && mode === 'changePost') {
-    console.log(data);
-    // result = await toMeal_list.updateOne({ "tr_id": whoseName });
-    result = true
 
-}
 
 
 
