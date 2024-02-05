@@ -10,15 +10,19 @@ export default function page() {
   const nav = useRouter();
   const trainerCon = useRef();
   const memberCon = useRef();
-  const [types , setTypes] = useState('m')
-  
-  const arrowClick = ()=>{
+  const [types, setTypes] = useState('m')
+  const [pswd, setPswd] = useState(false)
+
+  const pswdtoggle = () => {
+    setPswd(!pswd)
+  }
+  const arrowClick = () => {
     nav.push('/pages/member/login')
   }
-  const trainerClick = ()=>{
+  const trainerClick = () => {
     setTypes('t');
   }
-  const memberClick = ()=>{
+  const memberClick = () => {
     setTypes('m');
   }
 
@@ -30,20 +34,20 @@ export default function page() {
     checkpw: '',
     trCode: ''
   });
-  const getInput = function(e){
-    const {name, value} = e.target;
+  const getInput = function (e) {
+    const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   }
   //트레이너 코드 생성
-  function makeTrCode(){
-    const char ='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+  function makeTrCode() {
+    const char = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
     let randomCode = '';
 
-    for(let i=0; i<6; i++){
-      const randomMix = Math.floor(Math.random()*char.length);
+    for (let i = 0; i < 6; i++) {
+      const randomMix = Math.floor(Math.random() * char.length);
       randomCode += char.charAt(randomMix);
     }
     return randomCode;
@@ -51,104 +55,104 @@ export default function page() {
 
   //받은 값 db에 맞춰 가공
   let insertData;
-  if(types=='m'){
-    insertData ={
-      mb_name:formData.name,
-      mb_id:formData.userid,
-      mb_pw:formData.userpw,
-      mb_code:formData.trCode,
-      mb_img:'/character2.png',
-      mb_date:Date.now()
+  if (types == 'm') {
+    insertData = {
+      mb_name: formData.name,
+      mb_id: formData.userid,
+      mb_pw: formData.userpw,
+      mb_code: formData.trCode,
+      mb_img: '/character2.png',
+      mb_date: Date.now()
     }
-  }else if(types=='t'){
-    insertData ={
-      tr_name:formData.name,
-      tr_id:formData.userid,
-      tr_pw:formData.userpw,
-      tr_code:makeTrCode(),
-      tr_img:'/character2.png',
-      tr_date:Date.now(),
-      tr_family:[]
+  } else if (types == 't') {
+    insertData = {
+      tr_name: formData.name,
+      tr_id: formData.userid,
+      tr_pw: formData.userpw,
+      tr_code: makeTrCode(),
+      tr_img: '/character2.png',
+      tr_date: Date.now(),
+      tr_family: []
     }
   }
   //아이디 중복 확인
-  const [isIdOk,setIsIdOk]=useState(false);
-  const idCheck = async (e)=>{
+  const [isIdOk, setIsIdOk] = useState(false);
+  const idCheck = async (e) => {
     e.preventDefault();
-    const send = {id:formData.userid}
+    const send = { id: formData.userid }
     let res;
-    if(types=='t'){
-      res = await axios.post("/api/member?type=tr&mode=idCheck",send)
+    if (types == 't') {
+      res = await axios.post("/api/member?type=tr&mode=idCheck", send)
       // console.log(res);
-    }else{
-      res = await axios.post("/api/member?type=mb&mode=idCheck",send)
+    } else {
+      res = await axios.post("/api/member?type=mb&mode=idCheck", send)
       // console.log(res.data);
     }
 
-    if(res.data==false){
+    if (res.data == false) {
       alert('이미 사용 중인 아이디입니다');
       setIsIdOk(false); return;
-    }else{
+    } else {
       // alert('사용 가능한 아이디입니다'); 
       setIsIdOk(true); return;
     }
   }
-  const [isPwOk,setIsPwOk]=useState(false);
-  const [isTrCodeOk,setIsTrCodeOk]=useState(false);
-  const [isPwGreen,setIsPwGreen]=useState(false);
+  const [isPwOk, setIsPwOk] = useState(false);
+  const [isTrCodeOk, setIsTrCodeOk] = useState(false);
+  const [isPwGreen, setIsPwGreen] = useState(false);
   //가입하기 클릭시 유효성 검사 후 DB로 보냄
-  const dataSubmit = async (e)=>{
+  const dataSubmit = async (e) => {
     e.preventDefault();
-    
+
     //이름 한글 5자 이하
     let regName = /^[가-힣]{1,5}$/;
-    if(!regName.test(formData.name)){
+    if (!regName.test(formData.name)) {
       alert('이름은 5자 이하의 한글로 입력해 주세요'); return
     }
     //아이디 체크
     let regId = /^[A-Za-z0-9]+$/;
-    if(!regId.test(formData.userid)){
+    if (!regId.test(formData.userid)) {
       alert('아이디는 영문 또는 숫자로 입력해 주세요'); return
     }
-    if(isIdOk==false){
+    if (isIdOk == false) {
       alert('아이디 중복 확인을 해주세요'); return;
     }
     //비밀번호 체크
     let regPw = /^(?=.*[A-Za-z])(?=.*\d).{8,15}$/;
-    if( !regPw.test(formData.userpw) ){
+    if (!regPw.test(formData.userpw)) {
       alert('비밀번호는 영문+숫자 포함 8-15자 내로 입력해 주세요');
       return
     }
     //비밀번호 재확인
-    if(formData.userpw != formData.checkpw){
+    if (formData.userpw != formData.checkpw) {
       // alert('비밀번호가 일치하지 않습니다');
       setIsPwGreen(false);
       setIsPwOk(true);
       return
     }
-    if(formData.userpw == formData.checkpw){
+    if (formData.userpw == formData.checkpw) {
       //비번 일치합니다-초록색
-      setIsPwOk(false);setIsPwGreen(true); 
+      setIsPwOk(false); setIsPwGreen(true);
     }
     //미입력방지
-    if( !formData.name || !formData.userid || !formData.userpw || !formData.checkpw ){
+    if (!formData.name || !formData.userid || !formData.userpw || !formData.checkpw) {
       alert('모든 정보를 입력해 주세요')
       return;
     }
 
     //트레이너 코드 확인
-    const codeSend = {code:formData.trCode, mb_id:formData.userid}
+    const codeSend = { code: formData.trCode, mb_id: formData.userid }
     let res, codeRes;
-    
-    if(types=='m'){//일반회원일 경우만 진행
-      if(!formData.trCode){//미입력방지
+
+    if (types == 'm') {//일반회원일 경우만 진행
+      if (!formData.trCode) {//미입력방지
         alert('모든 정보를 입력해 주세요'); return;
       }
-      res = await axios.post("/api/member?type=mb&mode=codeCheck",codeSend)
-  
+      res = await axios.post("/api/member?type=mb&mode=codeCheck", codeSend)
+
       codeRes = res.data;
 
-      if(codeRes==false){
+      if (codeRes == false) {
         alert('존재하지 않는 트레이너 코드입니다.');
         setIsTrCodeOk(true)
         return;
@@ -156,17 +160,17 @@ export default function page() {
     }
 
     //트레이너/일반회원 DB구분해 전송
-    if(types=='t'){
+    if (types == 't') {
       axios
-      .post("/api/member?type=tr&mode=insert",insertData)
-      .then(res=>{console.log(res.data);}) 
+        .post("/api/member?type=tr&mode=insert", insertData)
+        .then(res => { console.log(res.data); })
     }
-    if(types=='m'){
+    if (types == 'm') {
       axios
-      .post("/api/member?type=mb&mode=insert",insertData)
-      .then(res=>{ console.log(res.data);}) 
+        .post("/api/member?type=mb&mode=insert", insertData)
+        .then(res => { console.log(res.data); })
     }
-    
+
     alert('가입을 축하합니다!');
     arrowClick();
   }
@@ -174,14 +178,14 @@ export default function page() {
   return (
     <div className={join.join_wrap}>
       <header>
-        <figure onClick={arrowClick}><img src='/arrow_left.png' alt='뒤로가기'/></figure>
+        <figure onClick={arrowClick}><img src='/arrow_left.png' alt='뒤로가기' /></figure>
         <p>회원가입</p>
       </header>
 
       <form className={join.joins}>
         <div className={join.trainer}>
-          <input type='radio' name='types' value="t" id='check_t' checked={types == 't' ? true : false} readOnly/>
-          <label htmlFor='check_t' onClick={trainerClick}>          
+          <input type='radio' name='types' value="t" id='check_t' checked={types == 't' ? true : false} readOnly />
+          <label htmlFor='check_t' onClick={trainerClick}>
             <div className={join.joins_txt}>
               <p>트레이너로 가입</p>
               <span>회원님들의 식단을 공유 받고 싶어요</span>
@@ -189,7 +193,7 @@ export default function page() {
           </label>
         </div>
         <div className={join.member}>
-          <input type='radio' name='types' value='m' id='check_m' checked={types == 't' ? false : true} readOnly/>
+          <input type='radio' name='types' value='m' id='check_m' checked={types == 't' ? false : true} readOnly />
           <label htmlFor='check_m' onClick={memberClick}>
             <div className={join.joins_txt}>
               <p>회원으로 가입</p>
@@ -202,22 +206,22 @@ export default function page() {
             <div className={join.trainer_wrap} ref={trainerCon}>
               <label>
                 이름
-                <input 
+                <input
                   type="text" maxLength='8'
-                  placeholder='이름을 입력해 주세요.' 
+                  placeholder='이름을 입력해 주세요.'
                   onChange={getInput} name="name"
                 />
               </label>
               <label>
                 아이디
                 {
-                  isIdOk==true?
-                  <span>사용 가능한 아이디입니다.</span>
-                  :
-                  <span></span>
+                  isIdOk == true ?
+                    <span>사용 가능한 아이디입니다.</span>
+                    :
+                    <span></span>
                 }
                 <div>
-                  <input 
+                  <input
                     type="text" placeholder='아이디를 입력해 주세요.'
                     onChange={getInput} name="userid"
                   />
@@ -226,51 +230,53 @@ export default function page() {
               </label>
               <label>
                 비밀번호
-                <input 
-                  type="text" placeholder='영어, 숫자 조합의 8-15자'
+                <input
+                  type={pswd ? "text" : "password"} placeholder='영어, 숫자 조합의 8-15자'
                   onChange={getInput} name="userpw"
                 />
+                <span className={pswd ? `${join.show}` : ''} onClick={pswdtoggle}></span>
               </label>
               <label>
                 비밀번호 재확인
                 {
-                  isPwOk==true?
-                  <span>비밀번호가 일치하지 않습니다.</span>
-                  :
-                  <span></span>
+                  isPwOk == true ?
+                    <span>비밀번호가 일치하지 않습니다.</span>
+                    :
+                    <span></span>
                 }
                 {
-                  isPwGreen==true?
-                  <span>비밀번호가 일치합니다.</span>
-                  :
-                  <span></span>
+                  isPwGreen == true ?
+                    <span>비밀번호가 일치합니다.</span>
+                    :
+                    <span></span>
                 }
-                <input 
-                  type="text" placeholder='비밀번호를 입력해 주세요.'
+                <input
+                  type="password" placeholder='비밀번호를 입력해 주세요.'
                   onChange={getInput} name="checkpw"
                 />
+                <span className={pswd ? `${join.show}` : ''} onClick={pswdtoggle}></span>
               </label>
             </div>
-          :
+            :
             <div className={join.member_wrap} ref={memberCon}>
               <label>
                 이름
-                <input 
+                <input
                   type="text" maxLength='8'
-                  placeholder='이름을 입력해 주세요.' 
+                  placeholder='이름을 입력해 주세요.'
                   onChange={getInput} name="name"
                 />
               </label>
               <label>
                 아이디
                 {
-                  isIdOk==true?
-                  <span>사용 가능한 아이디입니다.</span>
-                  :
-                  <span></span>
+                  isIdOk == true ?
+                    <span>사용 가능한 아이디입니다.</span>
+                    :
+                    <span></span>
                 }
                 <div>
-                  <input 
+                  <input
                     type="text" placeholder='아이디를 입력해 주세요.'
                     onChange={getInput} name="userid"
                   />
@@ -279,47 +285,48 @@ export default function page() {
               </label>
               <label>
                 비밀번호
-                <input 
-                  type="text" placeholder='영어, 숫자 조합의 8-15자'
+                <input
+                  type={pswd ? "text" : "password"} placeholder='영어, 숫자 조합의 8-15자'
                   onChange={getInput} name="userpw"
                 />
+                <span className={pswd ? `${join.show}` : ''} onClick={pswdtoggle}></span>
               </label>
               <label>
                 비밀번호 재확인
                 {
-                  isPwOk==true?
-                  <span>비밀번호가 일치하지 않습니다.</span>
-                  :
-                  <span></span>
+                  isPwOk == true ?
+                    <span>비밀번호가 일치하지 않습니다.</span>
+                    :
+                    <span></span>
                 }
                 {
-                  isPwGreen==true?
-                  <span style={{ color: '#32993e' }}>비밀번호가 일치합니다.</span>
-                  :
-                  <span></span>
+                  isPwGreen == true ?
+                    <span style={{ color: '#32993e' }}>비밀번호가 일치합니다.</span>
+                    :
+                    <span></span>
                 }
-                <input 
-                  type="text" placeholder='비밀번호를 입력해 주세요.'
+                <input
+                  type="password" placeholder='비밀번호를 입력해 주세요.'
                   onChange={getInput} name="checkpw"
                 />
               </label>
               <label>
                 트레이너 코드
                 {
-                  isTrCodeOk==true?
-                  <span>잘못된 코드입니다.</span>
-                  :
-                  <span></span>
+                  isTrCodeOk == true ?
+                    <span>잘못된 코드입니다.</span>
+                    :
+                    <span></span>
                 }
-                <input 
+                <input
                   type="text" placeholder='정확한 코드를 입력해 주세요.'
                   onChange={getInput} name="trCode"
                 />
               </label>
             </div>
         }
-        <input 
-          type="submit" value="가입하기" 
+        <input
+          type="submit" value="가입하기"
           className={join.join_submit}
           onClick={dataSubmit}
         />

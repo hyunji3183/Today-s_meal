@@ -195,8 +195,6 @@ export default function () {
 			}
 			const queryString = createQuery({ postid });
 			router.push(`/pages/write/edit?${queryString}`);
-			// const postTextArray = posData.map(post => post.post_text);
-			// console.log(postTextArray );
 		}
 	}
 

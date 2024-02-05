@@ -143,6 +143,27 @@
             font-size: 12px;
           }
         }
+        &:nth-of-type(3){
+          position: relative;
+            span{
+              width: 24px;
+              height: 24px;
+              position: absolute;
+              right: 10px;
+              bottom: 10px;
+              display: inline-block;
+              background: url("/non_pswd.png");
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              cursor: pointer;
+          }
+          .show{
+            background: url("/pswd.png");
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              cursor: pointer;
+          }
+        }
         &:nth-of-type(4){
           position: relative;
           span{
@@ -210,6 +231,27 @@
             right: 0;
             color:#32993e;
             font-size: 12px;
+          }
+        }
+        &:nth-of-type(3){
+          position: relative;
+            span{
+              width: 24px;
+              height: 24px;
+              position: absolute;
+              right: 10px;
+              bottom: 10px;
+              display: inline-block;
+              background: url("/non_pswd.png");
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              cursor: pointer;
+          }
+          .show{
+            background: url("/pswd.png");
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              cursor: pointer;
           }
         }
         &:nth-of-type(4){
